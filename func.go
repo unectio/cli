@@ -117,7 +117,6 @@ func functionInfo(name *string) {
 func functionCommonInfo(name *string) {
 	var fn api.FunctionImage
 
-	flag.Parse()
 	fnid := resolve(fcol, *name)
 	makeReq(fcol.Info(string(fnid)), &fn)
 
