@@ -62,7 +62,7 @@ func codeAdd(cname *string) {
 
 	var ci api.CodeImage
 
-	ci.Name = *cname
+	ci.Name = generate(*cname, "code")
 	ci.Lang = *lang
 	ci.Source = &api.SourceImage{}
 	parseCode(*src, ci.Source)

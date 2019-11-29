@@ -25,7 +25,7 @@ func repoAdd(name *string) {
 
 	rp := api.RepoImage{}
 
-	rp.Name = *name
+	rp.Name = generate(*name, "repo")
 	rp.Type = "git"
 	rp.URL = *url
 

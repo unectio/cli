@@ -24,7 +24,7 @@ func authAdd(name *string) {
 	flag.Parse()
 
 	ai := api.AuthMethodImage{}
-	ai.Name = *name
+	ai.Name = generate(*name, "am")
 
 	if *key != "" {
 		ai.JWT = &api.AuthJWTImage { Key: *key }

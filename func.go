@@ -57,7 +57,7 @@ func functionAdd(name *string) {
 	flag.Parse()
 
 	fa := api.FunctionImage{}
-	fa.Name = *name
+	fa.Name = generate(*name, "fn")
 
 	if *env != "" {
 		fa.Env = parseEnv(*env)

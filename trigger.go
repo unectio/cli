@@ -65,7 +65,7 @@ func triggerAdd(name *string) {
 	fid := resolve(fcol, *fn)
 
 	tra := api.FuncTriggerImage{}
-	tra.Name = *name
+	tra.Name = generate(*name, "tg")
 
 	switch *src {
 	case "url":

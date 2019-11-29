@@ -73,7 +73,7 @@ func routerAdd(name *string) {
 
 	rt := api.RouterImage{}
 
-	rt.Name = *name
+	rt.Name = generate(*name, "router")
 	rt.Mux = mux
 
 	if *url != "" {

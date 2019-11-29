@@ -25,6 +25,9 @@ func parseKV(kv string) map[string]string {
 	ret := make(map[string]string)
 
 	for _, x := range strings.Split(kv, ";") {
+		if x == "" {
+			continue
+		}
 		y := strings.SplitN(x, "=", 2)
 		ret[y[0]] = y[1]
 	}
@@ -40,7 +43,7 @@ func secretAdd(name *string) {
 
 	sec := api.SecretImage {}
 
-	sec.Name = *name
+	sec.Name = generate(*name, "sec")
 	sec.Payload = pl
 
 	makeReq(seccol.Add(&sec), &sec)
