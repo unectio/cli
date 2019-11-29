@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 type Target struct {
 	Do	func(cmd int, namep *string)
 }
@@ -22,7 +26,10 @@ func getTarget(t string) *Target {
 		return &Target { Do: doAuth }
 	}
 
-	return &Target { Do: func(_ int, _ *string) { usage() } }
+	return &Target { Do: func(_ int, _ *string) {
+		fmt.Printf("Unknown target %s\n", t)
+		usage_targets()
+	} }
 }
 
 func listTargets() []string {
@@ -40,7 +47,7 @@ func listTargets() []string {
 func doTargetCmd(cmd int, namep *string, actions map[int]func(namep *string)) {
 	fn, ok := actions[cmd]
 	if !ok {
-		fn = func(_ *string){ usage() }
+		fn = func(_ *string){ usage_targets() }
 	}
 
 	fn(namep)

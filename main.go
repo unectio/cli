@@ -15,29 +15,39 @@ func fatal(msg string, args ...interface{}) {
 	os.Exit(1)
 }
 
-func usage() {
+func usage_summary() {
 	fmt.Printf("Usage: %s <command> [<target>] [<options>]\n", os.Args[0])
+
+	usage_commands()
+	usage_targets()
+
+	fmt.Printf("Try '%s <command>' for command help\n", os.Args[0])
+	fmt.Printf("    '%s <command> <target>' for target help\n", os.Args[0])
+}
+
+func usage_commands() {
 	fmt.Printf("Commands (* means cmd is targeted):\n")
 	cmds := listCommands()
 	for _, cmd := range cmds {
 		fmt.Printf("\t%s\n", cmd)
 	}
+}
 
+func usage_targets() {
 	fmt.Printf("Targets:\n")
 	tgts := listTargets()
 	for _, tgt := range tgts {
 		fmt.Printf("\t%s\n", tgt)
 	}
-
-	os.Exit(1)
 }
 
 var debug *bool
 var dryrun *bool
 
 func main() {
-	if len(os.Args) <= 2 {
-		usage()
+	if len(os.Args) <= 1 || os.Args[1] == "-help" {
+		usage_summary()
+		os.Exit(1)
 	}
 
 	debug = flag.Bool("debug", false, "Print debugging info")

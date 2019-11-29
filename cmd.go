@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"fmt"
 	"flag"
 )
 
@@ -35,7 +36,10 @@ func getCommand(c string) *Command {
 		return &Command { Do: loadSpec }
 	}
 
-	return &Command { Do: usage }
+	return &Command { Do: func() {
+		fmt.Printf("Unknown command %s\n", c)
+		usage_commands()
+	} }
 }
 
 func listCommands() []string {
@@ -50,28 +54,20 @@ func listCommands() []string {
 	}
 }
 
-func doAdd() {
-	doTarget(CmdAdd)
-}
-
-func doDel() {
-	doTarget(CmdDel)
-}
-
-func doList() {
-	doTarget(CmdList)
-}
-
-func doUpdate() {
-	doTarget(CmdUpdate)
-}
-
-func doInfo() {
-	doTarget(CmdInfo)
-}
+func doAdd() { doTarget(CmdAdd) }
+func doDel() { doTarget(CmdDel) }
+func doList() { doTarget(CmdList) }
+func doUpdate() { doTarget(CmdUpdate) }
+func doInfo() { doTarget(CmdInfo) }
 
 func doTarget(c int) {
 	var name *string
+
+	if len(os.Args) <= 1 || os.Args[1] == "-help" {
+		fmt.Printf("Specify a target\n")
+		usage_targets()
+		return
+	}
 
 	t := os.Args[1]
 	os.Args = os.Args[1:]
