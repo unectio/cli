@@ -1,7 +1,7 @@
 lets: .FORCE
-	go build
+	go build -o lets
 
 lets-full: .FORCE
-	go build -tags batcher
+	go build -tags batcher -o lets
 
 .PHONY: .FORCE
