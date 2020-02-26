@@ -117,6 +117,7 @@ func codeUpdate(ver *string) {
 
 func codeInfo(ver *string) {
 	fn := flag.String("f", "", "function name/id")
+	only_code := flag.Bool("C", false, "show code only")
 	flag.Parse()
 
 	fnid := resolve(fcol, *fn)
@@ -127,9 +128,12 @@ func codeInfo(ver *string) {
 
 	makeReq(xcol.Info(string(cver)), &ci)
 
-	showInfoElement(elementCode{&ci})
+	if !*only_code {
+		showInfoElement(elementCode{&ci})
 
-	fmt.Printf("------------------8<----------------------\n")
+		fmt.Printf("------------------8<----------------------\n")
+	}
+
 	fmt.Print(string(ci.Source.Text))
 	fmt.Printf("\n")
 }
