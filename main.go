@@ -23,6 +23,7 @@ func usage_summary() {
 
 	fmt.Printf("Try '%s <command>' for command help\n", os.Args[0])
 	fmt.Printf("    '%s <command> <target>' for target help\n", os.Args[0])
+	fmt.Printf("\nDefault configuration file is %s\n\n", defaultConfig)
 }
 
 func usage_commands() {
