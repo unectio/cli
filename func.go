@@ -131,6 +131,7 @@ func functionDelete(name *string) {
 
 func functionRun() {
 	name := flag.String("n", "", "function name")
+	code := flag.String("c", "", "code name")
 	req := flag.String("rq", "", "request (JSON string)")
 	flag.Parse()
 
@@ -143,8 +144,10 @@ func functionRun() {
 	}
 
 	fnid := resolve(fcol, *name)
+	xcol := ccol.Sub(string(fnid))
+	cver := resolve(xcol, *code)
 
-	makeReq(rq.Req("", "functions/" + string(fnid) + "/run").B(&rreq), &res)
+	makeReq(rq.Req("", "functions/" + string(fnid) + "/code/" + string(cver) + "/run").B(&rreq), &res)
 
 	fmt.Printf("Status:            %d\n", res.Status)
 	fmt.Printf("Time taken:        %dus\n", res.LatUs)
