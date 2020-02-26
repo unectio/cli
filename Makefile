@@ -1,7 +1,14 @@
+all: lets
+
+.PHONY: all
+
 lets: .FORCE
-	go build -o lets
+	GOPATH=$(GOPATH):$(shell pwd) go build -o lets
 
 lets-full: .FORCE
-	go build -tags batcher -o lets
+	GOPATH=$(GOPATH):$(shell pwd) go build -tags batcher -o lets
+
+deps:
+	./scripts/prep-devel.sh
 
 .PHONY: .FORCE
