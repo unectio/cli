@@ -170,7 +170,15 @@ func routerInfo(name *string) {
 		fmt.Printf("Table:\n")
 	}
 
+	var fns []*api.FunctionImage
+	makeReq(fcol.List(), &fns)
+
+	fnames := make(map[api.ObjectId]string)
+	for _, fn := range fns {
+		fnames[fn.Id] = fn.Name
+	}
+
 	for _, rule := range rt.Mux {
-		fmt.Printf("\t%s/%s=%s\n", rule.Methods, rule.Path, rule.FnId)
+		fmt.Printf("\t%s/%s=%s\n", rule.Methods, rule.Path, fnames[rule.FnId])
 	}
 }
