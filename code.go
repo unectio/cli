@@ -157,10 +157,8 @@ func codeInfo(ver *string) {
 
 	if !*only_code {
 		showInfoElement(elementCode{&ci})
-
-		fmt.Printf("------------------8<----------------------\n")
+	} else {
+		fmt.Print(string(ci.Source.Text))
+		fmt.Printf("\n")
 	}
-
-	fmt.Print(string(ci.Source.Text))
-	fmt.Printf("\n")
 }
