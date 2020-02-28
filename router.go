@@ -105,6 +105,8 @@ func routerAdd(name *string) {
 
 	if *url != "" {
 		rt.URL = *url
+	} else {
+		rt.URL = api.AutoValue
 	}
 
 	makeReq(rtcol.Add(&rt), &rt)

@@ -1,0 +1,65 @@
+The 'lets' tool documentation
+
+lets
+	add					-- add object
+	del | delete				-- delete object
+	info					-- show object info
+	ls | list				-- list objects
+	upd | update				-- update object
+
+			fn | func | function
+			code
+			rt | router
+			repo | repository
+			am | auth_method
+			sec | secret
+			tg | trig | trigger
+
+	add function
+	      -n NAME
+	    [ -e <key=val:...> ]                      -- environment
+
+	info function
+	      -n NAME/ID
+
+	update function
+	      -n NAME
+	    [ -s SOURCES ]
+	    [ -e <key=val:...> ]
+
+	add code
+	      -f FUNCTION
+	      -n NAME
+	      -l LANGUAGE
+	      -s SOURCES
+
+	add router
+	      -n NAME
+	    [ -u URL ]
+	      -t <m,m,.../path/to=function:...>       -- table
+
+	info router
+	      -n NAME/ID
+
+	add trigger
+	      -f FUNCTION
+	      -n NAME
+	      -s SOURCE                               -- e.g. "url"
+
+	info trigger
+	      -f FN_NAME
+	      -n NAME/ID
+
+	add repo
+	      -n NAME
+	    [ -u URL ]
+
+	info repo
+	      -n NAME/ID
+
+	add auth_method
+	      -n NAME
+	    [ -k KEY ]                                -- base64-encoded key for JWT
+
+	info auth_method
+	      -n NAME/ID
