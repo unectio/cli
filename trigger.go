@@ -30,6 +30,7 @@ package main
 import (
 	"fmt"
 	"flag"
+	"strings"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 )
@@ -79,6 +80,18 @@ func (te elementTg)long() []*field {
 			},
 		}
 	}
+	if te.FuncTriggerImage.Cron != nil {
+		return []*field {
+			{
+				name:	"Tab",
+				data:	te.FuncTriggerImage.Cron.Tab,
+			},
+			{
+				name:	"Cron args",
+				data:	te.FuncTriggerImage.Cron.Args,
+			},
+		}
+	}
 
 	return nil
 }
@@ -88,6 +101,8 @@ func triggerAdd(name *string) {
 	src := flag.String("s", "", "trigger source")
 	auth := flag.String("a", "", "URL trigger auth name/id")
 	url := flag.String("u", "", "URL trigger URL")
+	tab := flag.String("t", "", "Cron trigger tab")
+	cargs := flag.String("ca", "", "Cron trigger args in foo=bar:... format")
 	flag.Parse()
 
 	fid := resolve(fcol, *fn)
@@ -103,6 +118,21 @@ func triggerAdd(name *string) {
 		}
 		if *url != "" {
 			tra.URL.URL = *url
+		}
+	case "cron":
+		tra.Cron = &api.CronTrigImage{ }
+		if *tab != "" {
+			tra.Cron.Tab = *tab
+		}
+		if *cargs != "" {
+			tra.Cron.Args = make(map[string]string)
+			for _, a := range strings.Split(*cargs, ":") {
+				x := strings.SplitN(a, "=", 2)
+				if len(x) != 2 {
+					fatal("Bad cron arg %s", a)
+				}
+				tra.Cron.Args[x[0]] = x[1]
+			}
 		}
 	}
 
