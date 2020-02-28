@@ -28,8 +28,10 @@
 package main
 
 import (
+	"os"
 	"fmt"
 	"flag"
+	"bufio"
 	"errors"
 	"strings"
 	"github.com/unectio/api"
@@ -53,6 +55,10 @@ func doRouter(cmd int, name *string) {
 	doTargetCmd(cmd, name, rt_actions)
 }
 
+func formatRule(rule *api.RouteRuleImage, fnames map[api.ObjectId]string) string {
+	return fmt.Sprintf("\t%s/%s=%s\n", rule.Methods, rule.Path, fnames[rule.FnId])
+}
+
 func parseRule(rule string) (*api.RouteRuleImage, error) {
 	sep1 := strings.Index(rule, "/")
 	if sep1 == -1 {
@@ -74,16 +80,67 @@ func parseRule(rule string) (*api.RouteRuleImage, error) {
 	return ret, nil
 }
 
-func parseTable(table string) ([]*api.RouteRuleImage, error) {
+/*
+ * Table can be provided either as a option argument (plain string)
+ * or be written in a file.
+ *
+ * The plain string is comma-separated set of rules, the file is
+ * one rule by line.
+ *
+ * Rule is M/P=F where M is the comma-separated list of methods,
+ * the P is slash-separated path and F is function name.
+ *
+ * If you want to edit a mux on a server, there's no such API. Instead,
+ * do this:
+ *
+ *  $ show router -M > mux.txt
+ *  $ edit it with your favourite text editor
+ *  $ upd router -tf mux.txt
+ *
+ * or this:
+ *
+ *  $ show router -M | sed -e ... | upd router -tf -
+ *
+ */
+func parseTable(table, file string) ([]*api.RouteRuleImage, error) {
 	var ret []*api.RouteRuleImage
 
-	for _, rule := range strings.Split(table, ":") {
-		r, err := parseRule(rule)
-		if err != nil {
-			return nil, err
+	if table != "" {
+		for _, rule := range strings.Split(table, ":") {
+			r, err := parseRule(rule)
+			if err != nil {
+				return nil, err
+			}
+
+			ret = append(ret, r)
+		}
+	} else if file != "" {
+		var f *os.File
+
+		if file == "-" {
+			f = os.Stdin
+		} else {
+			var err error
+
+			f, err = os.Open(file)
+			if err != nil {
+				return nil, errors.New("error reading table file: " + err.Error())
+			}
+
+			defer f.Close()
 		}
 
-		ret = append(ret, r)
+		sc := bufio.NewScanner(f)
+		for sc.Scan() {
+			r, err := parseRule(sc.Text())
+			if err != nil {
+				return nil, err
+			}
+
+			ret = append(ret, r)
+		}
+	} else {
+		return nil, errors.New("either table or file needed")
 	}
 
 	return ret, nil
@@ -93,12 +150,13 @@ var muxprop = apilet.RtMux
 
 func routerUpdate(name *string) {
 	table := flag.String("t", "", "table (m,.../path=fn:...)")
+	table_from := flag.String("tf", "", "file to read table from (in info -M format)")
 	flag.Parse()
 
 	rtid := resolve(rtcol, *name)
 
-	if *table != "" {
-		mux, err := parseTable(*table)
+	if *table != "" || *table_from != "" {
+		mux, err := parseTable(*table, *table_from)
 		if err != nil {
 			fatal("Error parsing table: %s\n", err.Error())
 		}
@@ -109,10 +167,11 @@ func routerUpdate(name *string) {
 
 func routerAdd(name *string) {
 	table := flag.String("t", "", "table (m,.../path=fn:...)")
+	table_from := flag.String("tf", "", "file to read table from (in info -M format)")
 	url := flag.String("u", "", "custom URL to work on")
 	flag.Parse()
 
-	mux, err := parseTable(*table)
+	mux, err := parseTable(*table, *table_from)
 	if err != nil {
 		fatal("Error parsing table: %s\n", err.Error())
 	}
@@ -179,6 +238,6 @@ func routerInfo(name *string) {
 	}
 
 	for _, rule := range rt.Mux {
-		fmt.Printf("\t%s/%s=%s\n", rule.Methods, rule.Path, fnames[rule.FnId])
+		fmt.Printf("\t%s\n", formatRule(rule, fnames))
 	}
 }
