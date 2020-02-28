@@ -47,15 +47,15 @@ type Command struct {
 
 func getCommand(c string) *Command {
 	switch c {
-	case "add":
+	case "add", "create":
 		return &Command { Do: doAdd }
 	case "del", "delete":
 		return &Command { Do: doDel }
 	case "ls", "list":
 		return &Command { Do: doList }
-	case "upd", "update":
+	case "upd", "update", "set":
 		return &Command { Do: doUpdate }
-	case "info":
+	case "info", "get":
 		return &Command { Do: doInfo }
 	case "run":
 		return &Command { Do: functionRun }
@@ -72,7 +72,7 @@ func getCommand(c string) *Command {
 func listCommands() []string {
 	return []string {
 		"ls  | list   *",
-		"add          *",
+		"add | create *",
 		"del | delete *",
 		"upd | update *",
 		"info         *",
@@ -90,7 +90,7 @@ func doInfo() { doTarget(CmdInfo) }
 func doTarget(c int) {
 	var name *string
 
-	if len(os.Args) <= 1 || os.Args[1] == "-help" {
+	if len(os.Args) <= 1 || os.Args[1] == "--help" {
 		fmt.Printf("Specify a target\n")
 		usage_targets()
 		return

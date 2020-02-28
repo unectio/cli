@@ -48,8 +48,8 @@ func usage_summary() {
 	usage_commands()
 	usage_targets()
 
-	fmt.Printf("Try '%s <command>' for command help\n", os.Args[0])
-	fmt.Printf("    '%s <command> <target>' for target help\n", os.Args[0])
+	fmt.Printf("Try '%s <command> --help' for command help\n", os.Args[0])
+	fmt.Printf("    '%s <command> <target> --help' for target help\n", os.Args[0])
 	fmt.Printf("\nDefault configuration file is %s\n\n", defaultConfig)
 }
 
@@ -73,7 +73,7 @@ var debug *bool
 var dryrun *bool
 
 func main() {
-	if len(os.Args) <= 1 || os.Args[1] == "-help" {
+	if len(os.Args) <= 1 || os.Args[1] == "--help" {
 		usage_summary()
 		os.Exit(1)
 	}
