@@ -1,0 +1,94 @@
+The 'lets' tool - proposal for changes.
+Brief of the changes:
+1. Require object name right after action/object time, without -n 
+2. Rename commands: add->create, update->set. Consider renaming "info" to "show" or "get"
+3. always refer to parent function as -f|--function (never -n). -n|--name for renames only (set command)
+4. Add some extra management via "set" for different objects
+5. enable short/long option versions for most commands
+
+lets
+	create					-- create object  // why not "add" - add is commonly used to connect one object to another (openstack server add port)
+	del | delete			-- delete object
+	info					-- show object info // maybe also  "show" or "get" (those are common)
+	ls | list				-- list objects
+	set						-- update object //why not "update": set is shorter and more commmon
+
+			fn | func | function
+			code
+			rt | router
+			repo | repository
+			am | auth_method
+			sec | secret
+			tg | trig | trigger
+
+	create function <name>
+	    [ -e|--environment <key=val:...> ]                      -- environment
+
+	del function <name|id>
+	
+	info function <name|id> - show "brief" info by default
+	      [-i|--info logs|stats]
+
+	ls function
+
+	set function <name|id>
+	    [-n|--name <name>] 										-- rename
+	    [ -s SOURCES ]  //I dont think we have it?
+	    [ -e|--environment <key=val:...> ]						-- replace environment
+
+	create code <name>
+	      -f|--function <name|id>
+	      -l|--lang <LANGUAGE>
+	      -s|--source <SOURCES>
+
+	set code <name|id>
+	      -f|--function <name|id>
+		  [-n|--name <new-name>]									-- rename
+	      [-l|--lang <LANGUAGE>]									-- set language (only with -s)
+	      [-s|--source <SOURCES>]									-- replace source
+
+	del code <name>
+	      -f|--function <name|id>
+
+	info code <name>
+		  -f|--function <name>
+		  [-i|--info code|status|logs]								-- if omitted, basic status is shown
+
+	create router <name>
+	    [-u|--url URL ]
+	    [-m|--map <m,m,.../path/to=function:...>       				-- table (map entries), can be repeated multiple times
+
+	info router <name|id>
+
+	set router <name|id>
+		[--name <new-name>]											--  rename
+		[-u|--url URL]												-- change URL
+		[--add-map <m,m,.../path/to=function:...>]					-- maps to add
+		[--del-map <list>]											-- map entries to remove. if possible we want to allow to combine --add-map
+																	-- and --del-map in one run, to implement function replacement for given entry
+
+	create trigger <name>
+	      -f|--function <name|id>
+	      -s|--source <SOURCE>                               		-- e.g. "url"
+		  [-p|--path <url-path>]									-- is this the right place to implement named paths for triggers?
+
+	info trigger <name|id>
+	      -f|--function <name|id>
+	      [-i|--info <what>]										-- do we have any stats to print? maybe access history? as function may have many triggers
+
+	set trigger <name|id>
+		  [-n|--name <name>]										--rename
+		  [-p|--path  <path>]										-- change path (if we support named paths for triggers)
+
+	del trigger <name|id>
+		  -f|--function <name|id>
+
+	create repo <name>
+	    [ -u URL ]													--isn't it mandatory? is there a value in repo without URL?
+
+	info repo <name|id>
+
+	create auth_method <name>
+	    [ -k KEY ]                                -- base64-encoded key for JWT
+
+	info auth_method <name>
