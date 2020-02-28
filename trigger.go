@@ -87,6 +87,7 @@ func triggerAdd(name *string) {
 	fn := flag.String("f", "", "function name/id")
 	src := flag.String("s", "", "trigger source")
 	auth := flag.String("a", "", "URL trigger auth name/id")
+	url := flag.String("u", "", "URL trigger URL")
 	flag.Parse()
 
 	fid := resolve(fcol, *fn)
@@ -96,9 +97,12 @@ func triggerAdd(name *string) {
 
 	switch *src {
 	case "url":
-		tra.URL = &api.URLTrigImage{ URL: "auto" }
+		tra.URL = &api.URLTrigImage{ URL: api.AutoValue }
 		if *auth != "" {
 			tra.URL.AuthId = resolve(authcol, *auth)
+		}
+		if *url != "" {
+			tra.URL.URL = *url
 		}
 	}
 
