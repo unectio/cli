@@ -154,6 +154,7 @@ func routerList(_ *string) {
 }
 
 func routerInfo(name *string) {
+	mux_only := flag.Bool("M", false, "Show only the mux")
 	flag.Parse()
 
 	rtid := resolve(rtcol, *name)
@@ -162,10 +163,13 @@ func routerInfo(name *string) {
 
 	makeReq(rtcol.Info(string(rtid)), &rt)
 
-	fmt.Printf("Id:             %s\n", rt.Id)
-	fmt.Printf("Name:           %s\n", rt.Name)
-	fmt.Printf("URL:            %s\n", rt.URL)
-	fmt.Printf("Table:\n")
+	if !*mux_only {
+		fmt.Printf("Id:             %s\n", rt.Id)
+		fmt.Printf("Name:           %s\n", rt.Name)
+		fmt.Printf("URL:            %s\n", rt.URL)
+		fmt.Printf("Table:\n")
+	}
+
 	for _, rule := range rt.Mux {
 		fmt.Printf("\t%s/%s=%s\n", rule.Methods, rule.Path, rule.FnId)
 	}
