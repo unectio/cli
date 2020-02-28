@@ -47,6 +47,7 @@ func doRouter(cmd int, name *string) {
 	rt_actions[CmdAdd] = routerAdd
 	rt_actions[CmdList] = routerList
 	rt_actions[CmdInfo] = routerInfo
+	rt_actions[CmdUpdate] = routerUpdate
 	rt_actions[CmdDel] = routerDelete
 
 	doTargetCmd(cmd, name, rt_actions)
@@ -86,6 +87,24 @@ func parseTable(table string) ([]*api.RouteRuleImage, error) {
 	}
 
 	return ret, nil
+}
+
+var muxprop = apilet.RtMux
+
+func routerUpdate(name *string) {
+	table := flag.String("t", "", "table (m,.../path=fn:...)")
+	flag.Parse()
+
+	rtid := resolve(rtcol, *name)
+
+	if *table != "" {
+		mux, err := parseTable(*table)
+		if err != nil {
+			fatal("Error parsing table: %s\n", err.Error())
+		}
+
+		makeReq(muxprop.Set(string(rtid), mux), nil)
+	}
 }
 
 func routerAdd(name *string) {
