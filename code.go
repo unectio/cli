@@ -76,6 +76,10 @@ func (ce elementCode)long() []*field {
 			name:	"Lang",
 			data:	ce.CodeImage.Lang,
 		},
+		{
+			name:	"Weight",
+			data:	ce.CodeImage.Weight,
+		},
 	}
 }
 
@@ -83,6 +87,7 @@ func codeAdd(cname *string) {
 	fn := flag.String("f", "", "function name/id")
 	lang := flag.String("l", "", "language")
 	src := flag.String("s", "", "sources (e.g. -- a file name)")
+	w := flag.Int("w", 0, "code weight")
 	flag.Parse()
 
 	fid := resolve(fcol, *fn)
@@ -91,6 +96,7 @@ func codeAdd(cname *string) {
 
 	ci.Name = generate(*cname, "code")
 	ci.Lang = *lang
+	ci.Weight = *w
 	ci.Source = &api.SourceImage{}
 	parseCode(*src, ci.Source)
 
@@ -128,10 +134,12 @@ func codeDel(ver *string) {
 func codeUpdate(ver *string) {
 	fn := flag.String("f", "", "function name/id")
 	src := flag.String("s", "", "sources (e.g. -- a file name)")
+	w := flag.Int("w", 0, "code weight")
 	flag.Parse()
 
 	var ci api.CodeImage
 
+	ci.Weight = *w
 	ci.Source = &api.SourceImage{}
 	parseCode(*src, ci.Source)
 
