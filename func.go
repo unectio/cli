@@ -76,6 +76,10 @@ func (fe elementFn)long() []*field {
 			name:	"Env",
 			data:	fmtArray(fe.FunctionImage.Env),
 		},
+		{
+			name:	"Code balancer",
+			data:	fe.FunctionImage.CodeBalancer,
+		},
 	}
 }
 
