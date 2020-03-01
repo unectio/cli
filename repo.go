@@ -42,6 +42,7 @@ func doRepo(cmd int, name *string) {
 	rep_actions[CmdAdd] = repoAdd
 	rep_actions[CmdList] = repoList
 	rep_actions[CmdInfo] = repoInfo
+	rep_actions[CmdDel] = repoDel
 
 	doTargetCmd(cmd, name, rep_actions)
 }
@@ -49,6 +50,10 @@ func doRepo(cmd int, name *string) {
 func repoAdd(name *string) {
 	url := flag.String("u", "", "repo URL (git)")
 	flag.Parse()
+
+	if *url == "" {
+		fatal("No URL specified, mind using -u option")
+	}
 
 	rp := api.RepoImage{}
 
@@ -59,6 +64,16 @@ func repoAdd(name *string) {
 	makeReq(repcol.Add(&rp), &rp)
 
 	fmt.Printf("Added repo (id %s)\n", rp.Id)
+}
+
+func repoDel(name *string) {
+	flag.Parse()
+
+	rpid := resolve(repcol, *name)
+	
+	makeReq(repcol.Delete(string(rpid)), nil)
+	
+	fmt.Printf("Deleted repo (id %s)\n", rpid)
 }
 
 func repoList(_ *string) {

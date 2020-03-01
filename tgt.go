@@ -76,6 +76,5 @@ func doTargetCmd(cmd int, namep *string, actions map[int]func(namep *string)) {
 	if !ok {
 		fn = func(_ *string){ usage_targets() }
 	}
-
 	fn(namep)
 }

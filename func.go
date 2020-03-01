@@ -155,6 +155,7 @@ func functionCommonInfo(name *string) {
 }
 
 func functionDelete(name *string) {
+	
 	flag.Parse()
 	fnid := resolve(fcol, *name)
 	makeReq(fcol.Delete(string(fnid)), nil)
