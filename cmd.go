@@ -95,7 +95,6 @@ func doTarget(c int) {
 		return
 	}
 
-	cmd := os.Args[0]
 	t := os.Args[1]
 	os.Args = os.Args[1:]
 
