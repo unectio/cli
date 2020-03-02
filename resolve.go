@@ -35,7 +35,7 @@ import (
 
 func resolve(col *client.Collection, val string) api.ObjectId {
 	if val == "" {
-		fatal("No name specified, mind using -n option")
+		fatal("No name specified, mind using -f option")
 	}
 
 	if val[0] == byte('%') {

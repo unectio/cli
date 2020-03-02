@@ -43,7 +43,7 @@ func fatal(msg string, args ...interface{}) {
 }
 
 func usage_summary() {
-	fmt.Printf("Usage: %s <command> {<target>} [<object>] [<options>]\n", os.Args[0])
+	fmt.Printf("Usage: %s <command> [<target>] [<object>] [<options>]\n", os.Args[0])
 
 	usage_commands()
 	usage_targets()
