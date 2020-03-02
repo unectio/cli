@@ -48,18 +48,24 @@ func doRepo(cmd int, name *string) {
 }
 
 func repoAdd(name *string) {
-	url := flag.String("u", "", "repo URL (git)")
+	var url string
+	const (
+		defaultUrl = ""
+		usageUrl = "repo URL (git)"
+	)
+	flag.StringVar(&url, "url", defaultUrl, usageUrl)
+	flag.StringVar(&url, "u", defaultUrl, usageUrl+" (shorthand)")
 	flag.Parse()
 
-	if *url == "" {
-		fatal("No URL specified, mind using -u option")
+	if url == "" {
+		fatal("No URL specified, mind using -u or --url option")
 	}
 
 	rp := api.RepoImage{}
 
 	rp.Name = generate(*name, "repo")
 	rp.Type = "git"
-	rp.URL = *url
+	rp.URL = url
 
 	makeReq(repcol.Add(&rp), &rp)
 

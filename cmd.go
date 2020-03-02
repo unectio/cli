@@ -30,7 +30,6 @@ package main
 import (
 	"os"
 	"fmt"
-	"flag"
 )
 
 const (
@@ -100,7 +99,12 @@ func doTarget(c int) {
 	os.Args = os.Args[1:]
 
 	if c != CmdList {
-		name = flag.String("n", "", "name or %id")
+		if len(os.Args) <= 1 {
+			fmt.Print("Specify an object name or %id for operations with existing objects\n")
+			return
+		}
+		name = &os.Args[1]
+		os.Args = os.Args[1:]
 	}
 
 	tgt := getTarget(t)

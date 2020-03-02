@@ -43,13 +43,14 @@ func fatal(msg string, args ...interface{}) {
 }
 
 func usage_summary() {
-	fmt.Printf("Usage: %s <command> [<target>] [<options>]\n", os.Args[0])
+	fmt.Printf("Usage: %s <command> {<target>} [<object>] [<options>]\n", os.Args[0])
 
 	usage_commands()
 	usage_targets()
 
 	fmt.Printf("Try '%s <command> --help' for command help\n", os.Args[0])
 	fmt.Printf("    '%s <command> <target> --help' for target help\n", os.Args[0])
+	fmt.Printf("    '%s <command> <target> <object> --help' for help with object arguments\n", os.Args[0])
 	fmt.Printf("\nDefault configuration file is %s\n\n", defaultConfig)
 }
 
