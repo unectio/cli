@@ -54,7 +54,7 @@ func getTarget(t string) *Target {
 	}
 
 	return &Target { Do: func(_ int, _ *string) {
-		fmt.Printf("Unknown target %s\n", t)
+		fmt.Printf("Unknown target - \"%s\"\n", t)
 		usage_targets()
 	} }
 }

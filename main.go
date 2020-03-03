@@ -63,7 +63,7 @@ func usage_commands() {
 }
 
 func usage_targets() {
-	fmt.Printf("Targets:\n")
+	fmt.Printf("Recognized targets:\n")
 	tgts := listTargets()
 	for _, tgt := range tgts {
 		fmt.Printf("\t%s\n", tgt)
