@@ -86,21 +86,39 @@ func (ce elementCode)long() []*field {
 }
 
 func codeAdd(cname *string) {
-	fn := flag.String("f", "", "function name/id")
-	lang := flag.String("l", "", "language")
-	src := flag.String("s", "", "sources (file name or url or repo:<repo name>:path)")
-	w := flag.Int("w", 0, "code weight")
+	var fn string
+	var lang string
+	var src string
+	var w int 
+	const (
+		fndefault_value = ""
+		fnusage   = "function name/id"
+		langdefault_value = ""
+		langusage   = "language"
+		srcdefault_value = ""
+		srcusage   = "sources (file name or url or repo:<repo name>:path)"
+		wdefault_value = 0
+		wusage   = "code weight"
+	)
+	flag.StringVar(&fn, "function", fndefault_value, fnusage)
+	flag.StringVar(&fn, "f", fndefault_value, fnusage+" (shorthand)")
+	flag.StringVar(&lang, "language", langdefault_value, langusage)
+	flag.StringVar(&lang, "l", langdefault_value, langusage+" (shorthand)")
+	flag.StringVar(&src, "source", srcdefault_value, srcusage)
+	flag.StringVar(&src, "s", srcdefault_value, srcusage+" (shorthand)")
+	flag.IntVar(&w, "weight", wdefault_value, wusage)
+	flag.IntVar(&w, "w", wdefault_value, wusage+" (shorthand)")
 	flag.Parse()
 
-	fid := resolve(fcol, *fn)
+	fid := resolve(fcol, fn)
 
 	var ci api.CodeImage
 
 	ci.Name = generate(*cname, "code")
-	ci.Lang = *lang
-	ci.Weight = *w
+	ci.Lang = lang
+	ci.Weight = w
 	ci.Source = &api.SourceImage{}
-	parseCode(*src, ci.Source)
+	parseCode(src, ci.Source)
 
 	makeReq(ccol.Sub(string(fid)).Add(&ci), &ci)
 
@@ -108,10 +126,16 @@ func codeAdd(cname *string) {
 }
 
 func codeList(_ *string) {
-	fn := flag.String("f", "", "function name/id")
+	var fn string
+	const (
+		default_value = ""
+		usage   = "function name/id"
+	)
+	flag.StringVar(&fn, "function", default_value, usage)
+	flag.StringVar(&fn, "f", default_value, usage+" (shorthand)")
 	flag.Parse()
 
-	fid := resolve(fcol, *fn)
+	fid := resolve(fcol, fn)
 
 	var cis []*api.CodeImage
 
@@ -123,10 +147,16 @@ func codeList(_ *string) {
 }
 
 func codeDel(ver *string) {
-	fn := flag.String("f", "", "function name/id")
+	var fn string
+	const (
+		default_value = ""
+		usage   = "function name/id"
+	)
+	flag.StringVar(&fn, "function", default_value, usage)
+	flag.StringVar(&fn, "f", default_value, usage+" (shorthand)")
 	flag.Parse()
 
-	fnid := resolve(fcol, *fn)
+	fnid := resolve(fcol, fn)
 	xcol := ccol.Sub(string(fnid))
 	cver := resolve(xcol, *ver)
 
@@ -134,18 +164,32 @@ func codeDel(ver *string) {
 }
 
 func codeUpdate(ver *string) {
-	fn := flag.String("f", "", "function name/id")
-	src := flag.String("s", "", "sources (e.g. -- a file name)")
-	w := flag.Int("w", 0, "code weight")
+	var fn string
+	var src string
+	var w int 
+	const (
+		fndefault_value = ""
+		fnusage   = "function name/id"
+		srcdefault_value = ""
+		srcusage   = "sources (file name or url or repo:<repo name>:path)"
+		wdefault_value = 0
+		wusage   = "code weight"
+	)
+	flag.StringVar(&fn, "function", fndefault_value, fnusage)
+	flag.StringVar(&fn, "f", fndefault_value, fnusage+" (shorthand)")
+	flag.StringVar(&src, "source", srcdefault_value, srcusage)
+	flag.StringVar(&src, "s", srcdefault_value, srcusage+" (shorthand)")
+	flag.IntVar(&w, "weight", wdefault_value, wusage)
+	flag.IntVar(&w, "w", wdefault_value, wusage+" (shorthand)")
 	flag.Parse()
 
 	var ci api.CodeImage
 
-	ci.Weight = *w
+	ci.Weight = w
 	ci.Source = &api.SourceImage{}
-	parseCode(*src, ci.Source)
+	parseCode(src, ci.Source)
 
-	fnid := resolve(fcol, *fn)
+	fnid := resolve(fcol, fn)
 	xcol := ccol.Sub(string(fnid))
 	cver := resolve(xcol, *ver)
 
@@ -153,11 +197,21 @@ func codeUpdate(ver *string) {
 }
 
 func codeInfo(ver *string) {
-	fn := flag.String("f", "", "function name/id")
-	only_code := flag.Bool("C", false, "show code only")
+	var fn string
+	var only_code bool
+	const (
+		fndefault_value = ""
+		fnusage   = "function name/id"
+		only_default_value = false
+		only_usage   = "show code only"
+	)
+	flag.StringVar(&fn, "function", fndefault_value, fnusage)
+	flag.StringVar(&fn, "f", fndefault_value, fnusage+" (shorthand)")
+	flag.BoolVar(&only_code, "code", only_default_value, only_usage)
+	flag.BoolVar(&only_code, "C", only_default_value, only_usage+" (shorthand)")
 	flag.Parse()
 
-	fnid := resolve(fcol, *fn)
+	fnid := resolve(fcol, fn)
 	xcol := ccol.Sub(string(fnid))
 	cver := resolve(xcol, *ver)
 
@@ -165,7 +219,7 @@ func codeInfo(ver *string) {
 
 	makeReq(xcol.Info(string(cver)), &ci)
 
-	if !*only_code {
+	if !only_code {
 		showInfoElement(elementCode{&ci})
 	} else {
 		fmt.Print(string(ci.Source.Text))

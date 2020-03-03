@@ -28,19 +28,20 @@
 package main
 
 import (
-	"fmt"
-	"flag"
-	"strings"
-	"github.com/unectio/api"
 	"encoding/json"
+	"flag"
+	"fmt"
+	"strings"
+
+	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
-	"github.com/unectio/util/request"
+	rq "github.com/unectio/util/request"
 )
 
 var fcol = apilet.Functions
 
 func doFunction(cmd int, name *string) {
-	fn_actions := map[int]func(name *string) {}
+	fn_actions := map[int]func(name *string){}
 
 	fn_actions[CmdAdd] = functionAdd
 	fn_actions[CmdDel] = functionDelete
@@ -51,46 +52,52 @@ func doFunction(cmd int, name *string) {
 	doTargetCmd(cmd, name, fn_actions)
 }
 
-type elementFn struct { *api.FunctionImage }
+type elementFn struct{ *api.FunctionImage }
 
-func (fe elementFn)id() string {
+func (fe elementFn) id() string {
 	return string(fe.FunctionImage.Id)
 }
 
-func (fe elementFn)name() string {
+func (fe elementFn) name() string {
 	return fe.FunctionImage.Name
 }
 
-func (fe elementFn)short() string {
+func (fe elementFn) short() string {
 	return ""
 }
 
-func (fe elementFn)long() []*field {
-	return []*field {
+func (fe elementFn) long() []*field {
+	return []*field{
 		{
-			name:	"State",
-			data:	fe.FunctionImage.State,
+			name: "State",
+			data: fe.FunctionImage.State,
 		},
 		{
-			name:	"Env",
-			data:	fmtArray(fe.FunctionImage.Env),
+			name: "Env",
+			data: fmtArray(fe.FunctionImage.Env),
 		},
 		{
-			name:	"Code balancer",
-			data:	fe.FunctionImage.CodeBalancer,
+			name: "Code balancer",
+			data: fe.FunctionImage.CodeBalancer,
 		},
 	}
 }
 
 func functionAdd(name *string) {
-	env := flag.String("e", "", "environment (key=val;...)")
+	var env string
+	const (
+		default_value = ""
+		usage   = "environment (key=val;...)"
+	)
+	flag.StringVar(&env, "environment", default_value, usage)
+	flag.StringVar(&env, "e", default_value, usage+" (shorthand)")
 	flag.Parse()
 
 	fa := api.FunctionImage{}
 	fa.Name = generate(*name, "fn")
 
-	if *env != "" {
-		fa.Env = parseEnv(*env)
+	if env != "" {
+		fa.Env = parseEnv(env)
 	}
 
 	makeReq(fcol.Add(&fa), &fa)
@@ -114,10 +121,16 @@ func functionList(_ *string) {
 }
 
 func functionInfo(name *string) {
-	inf := flag.String("i", "", "what to show (logs, stats)")
+	var inf string
+	const (
+		default_value = ""
+		usage   = "what to show (logs, stats)"
+	)
+	flag.StringVar(&inf, "information", default_value, usage)
+	flag.StringVar(&inf, "i", default_value, usage+" (shorthand)")
 	flag.Parse()
 
-	switch *inf {
+	switch inf {
 	case "stats":
 		functionStats(name)
 	case "logs":
@@ -137,7 +150,7 @@ func functionCommonInfo(name *string) {
 }
 
 func functionDelete(name *string) {
-	
+
 	flag.Parse()
 	fnid := resolve(fcol, *name)
 
@@ -170,7 +183,7 @@ func functionRun() {
 	xcol := ccol.Sub(string(fnid))
 	cver := resolve(xcol, *code)
 
-	makeReq(rq.Req("", "functions/" + string(fnid) + "/code/" + string(cver) + "/run").B(&rreq), &res)
+	makeReq(rq.Req("", "functions/"+string(fnid)+"/code/"+string(cver)+"/run").B(&rreq), &res)
 
 	fmt.Printf("Status:            %d\n", res.Status)
 	fmt.Printf("Time taken:        %dus\n", res.LatUs)
@@ -185,14 +198,20 @@ func functionRun() {
 }
 
 func functionUpdate(name *string) {
-	env := flag.String("e", "", "environment (key=val:...)")
+	var env string
+	const (
+		default_value = ""
+		usage   = "environment (key=val;...)"
+	)
+	flag.StringVar(&env, "environment", default_value, usage)
+	flag.StringVar(&env, "e", default_value, usage+" (shorthand)")
 	flag.Parse()
 
 	fnid := resolve(fcol, *name)
 
 	switch {
-	case *env != "":
-		functionUpdateEnv(fnid, *env)
+	case env != "":
+		functionUpdateEnv(fnid, env)
 	}
 }
 
