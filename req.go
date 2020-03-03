@@ -55,10 +55,10 @@ func (l *Login)MakeRequest(rq *rq.Request, res interface{}) error {
 	rq = rq.H(api.AuthTokHeader, util.BearerPrefix + l.token)
 	if *debug {
 		log.Printf("-> %s\n", rq.String())
-		log.Printf("`- %s\n", rq.Hdrs())
+		log.Printf("-> %s\n", rq.Hdrs())
 		if rq.Body != nil {
 			x, _ := json.Marshal(rq.Body)
-			log.Printf("`- [%s]\n", string(x))
+			log.Printf("-> [%s]\n", string(x))
 		}
 	}
 
@@ -77,6 +77,7 @@ func (l *Login)MakeRequest(rq *rq.Request, res interface{}) error {
 
 	if *debug {
 		log.Printf("<- %s\n", resp.String())
+		log.Printf("<- %s\n", resp.Hdrs())
 	}
 
 	return resp.E()
