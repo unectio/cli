@@ -88,7 +88,7 @@ func (ce elementCode)long() []*field {
 func codeAdd(cname *string) {
 	fn := flag.String("f", "", "function name/id")
 	lang := flag.String("l", "", "language")
-	src := flag.String("s", "", "sources (e.g. -- a file name)")
+	src := flag.String("s", "", "sources (file name or url or repo:<repo name>:path)")
 	w := flag.Int("w", 0, "code weight")
 	flag.Parse()
 
@@ -178,7 +178,8 @@ func parseCode(src string, ci *api.SourceImage) {
 		ci.URL = src
 	} else if strings.HasPrefix(src, "repo:") {
 		x := strings.SplitN(src, ":", 3)
-		ci.RepoId = api.ObjectId(x[1])
+		y := resolve(repcol, x[1])
+		ci.RepoId = api.ObjectId(y)
 		ci.Path = x[2]
 	} else {
 		var err error
