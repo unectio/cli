@@ -117,7 +117,7 @@ func triggerAdd(name *string) {
 			tra.URL.AuthId = resolve(authcol, *auth)
 		}
 		if *url != "" {
-			tra.URL.URL = *url
+			tra.URL.URL = api.URLProjectPfx + *url
 		}
 	case "cron":
 		tra.Cron = &api.CronTrigImage{ }

@@ -58,7 +58,7 @@ func (l *Login)MakeRequest(rq *rq.Request, res interface{}) error {
 		log.Printf("-> %s\n", rq.Hdrs())
 		if rq.Body != nil {
 			x, _ := json.Marshal(rq.Body)
-			log.Printf("-> [%s]\n", string(x))
+			log.Printf("BODY -> %s\n", string(x))
 		}
 	}
 
@@ -78,6 +78,10 @@ func (l *Login)MakeRequest(rq *rq.Request, res interface{}) error {
 	if *debug {
 		log.Printf("<- %s\n", resp.String())
 		log.Printf("<- %s\n", resp.Hdrs())
+		if res != nil {
+			x, _ := json.Marshal(res)
+			log.Printf("BODY <- %s\n", string(x))
+		}
 	}
 
 	return resp.E()
