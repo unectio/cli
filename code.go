@@ -30,6 +30,8 @@ package main
 import (
 	"fmt"
 	"flag"
+	"io/ioutil"
+	"strings"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 )
@@ -170,3 +172,21 @@ func codeInfo(ver *string) {
 		fmt.Printf("\n")
 	}
 }
+
+func parseCode(src string, ci *api.SourceImage) {
+	if strings.HasPrefix(src, "http") {
+		ci.URL = src
+	} else if strings.HasPrefix(src, "repo:") {
+		x := strings.SplitN(src, ":", 3)
+		ci.RepoId = api.ObjectId(x[1])
+		ci.Path = x[2]
+	} else {
+		var err error
+
+		ci.Text, err = ioutil.ReadFile(src)
+		if err != nil {
+			fatal("Error reading sources: %s\n", err.Error())
+		}
+	}
+}
+

@@ -32,7 +32,6 @@ import (
 	"flag"
 	"strings"
 	"github.com/unectio/api"
-	"io/ioutil"
 	"encoding/json"
 	"github.com/unectio/api/apilet"
 	"github.com/unectio/util/request"
@@ -97,23 +96,6 @@ func functionAdd(name *string) {
 	makeReq(fcol.Add(&fa), &fa)
 
 	showAddedElement(elementFn{&fa})
-}
-
-func parseCode(src string, ci *api.SourceImage) {
-	if strings.HasPrefix(src, "http") {
-		ci.URL = src
-	} else if strings.HasPrefix(src, "repo:") {
-		x := strings.SplitN(src, ":", 3)
-		ci.RepoId = api.ObjectId(x[1])
-		ci.Path = x[2]
-	} else {
-		var err error
-
-		ci.Text, err = ioutil.ReadFile(src)
-		if err != nil {
-			fatal("Error reading sources: %s\n", err.Error())
-		}
-	}
 }
 
 func parseEnv(envs string) []string {
