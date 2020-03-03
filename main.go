@@ -55,7 +55,7 @@ func usage_summary() {
 }
 
 func usage_commands() {
-	fmt.Printf("Commands (* means cmd is targeted):\n")
+	fmt.Printf("Available commands (<tgt> means command requires a target):\n")
 	cmds := listCommands()
 	for _, cmd := range cmds {
 		fmt.Printf("\t%s\n", cmd)

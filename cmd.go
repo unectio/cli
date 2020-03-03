@@ -70,11 +70,11 @@ func getCommand(c string) *Command {
 
 func listCommands() []string {
 	return []string {
-		"ls  | list   *",
-		"add | create *",
-		"del | delete *",
-		"upd | update *",
-		"info         *",
+		"ls   | list   <tgt>",
+		"add  | create <tgt>",
+		"del  | delete <tgt>",
+		"upd  | update <tgt>",
+		"info | get    <tgt>",
 		"run          (function)",
 		"load         (spec file)",
 	}
