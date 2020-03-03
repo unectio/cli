@@ -140,6 +140,15 @@ func functionDelete(name *string) {
 	
 	flag.Parse()
 	fnid := resolve(fcol, *name)
+
+	var cis []*api.CodeImage
+
+	makeReq(ccol.Sub(string(fnid)).List(), &cis)
+
+	for _, ci := range cis {
+		makeReq(ccol.Sub(string(fnid)).Delete(elementCode{ci}.id()), nil)
+	}
+
 	makeReq(fcol.Delete(string(fnid)), nil)
 }
 
