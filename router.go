@@ -182,7 +182,7 @@ func routerAdd(name *string) {
 	rt.Mux = mux
 
 	if *url != "" {
-		rt.URL = *url
+		rt.URL = api.URLProjectPfx + *url
 	} else {
 		rt.URL = api.AutoValue
 	}
