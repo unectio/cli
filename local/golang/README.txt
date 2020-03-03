@@ -1,6 +1,7 @@
 Aux environment to compile and test your functions locally.
 
 To use:
+- go get github.com/unectio/api
 - copy you code.go here
 - type make
 - run ./function

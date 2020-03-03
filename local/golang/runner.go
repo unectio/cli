@@ -16,6 +16,7 @@ import (
 	"strings"
 	"io/ioutil"
 	"encoding/json"
+	"github.com/unectio/api"
 )
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 	claims := flag.String("c", "", "Claims in 'name=value:...' format")
 	flag.Parse()
 
-	rq := Request{}
+	rq := api.Request{}
 	rq.Method = *method
 	rq.Path = *path
 	rq.Key = *key
