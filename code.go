@@ -86,9 +86,7 @@ func (ce elementCode)long() []*field {
 }
 
 func codeAdd(cname *string) {
-	var fn string
-	var lang string
-	var src string
+	var fn, lang, src string
 	var w int 
 	const (
 		fndefault_value = ""
@@ -164,8 +162,7 @@ func codeDel(ver *string) {
 }
 
 func codeUpdate(ver *string) {
-	var fn string
-	var src string
+	var fn, src string
 	var w int 
 	const (
 		fndefault_value = ""

@@ -32,7 +32,7 @@ import (
 	"flag"
 	"fmt"
 	"strings"
-
+	"os"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	rq "github.com/unectio/util/request"
@@ -166,22 +166,38 @@ func functionDelete(name *string) {
 }
 
 func functionRun() {
-	name := flag.String("n", "", "function name")
-	code := flag.String("c", "", "code name")
-	req := flag.String("rq", "", "request (JSON string)")
-	flag.Parse()
 
+	if len(os.Args) <= 1 {
+		fatal("Specify function to run")
+	}
+
+	var  name, code, req string
+	name  = os.Args[1]
+	os.Args = os.Args[1:]
+
+	const (
+		cdefault_value = ""
+		cusage   = "code name"
+		rdefault_value = ""
+		rusage   = "request (JSON string)"
+	)
+	flag.StringVar(&code, "code", cdefault_value, cusage)
+	flag.StringVar(&code, "c", cdefault_value, cusage+" (shorthand)")
+	flag.StringVar(&req, "rq", rdefault_value, rusage)
+	flag.StringVar(&req, "request", rdefault_value, rusage+" (shorthand)")
+	flag.Parse()
+	
 	var rreq api.FuncRun
 	var res api.RunResponse
 
-	err := json.Unmarshal([]byte(*req), &rreq.Req)
+	err := json.Unmarshal([]byte(req), &rreq.Req)
 	if err != nil {
 		fatal("Bad req param: " + err.Error())
 	}
 
-	fnid := resolve(fcol, *name)
+	fnid := resolve(fcol, name)
 	xcol := ccol.Sub(string(fnid))
-	cver := resolve(xcol, *code)
+	cver := resolve(xcol, code)
 
 	makeReq(rq.Req("", "functions/"+string(fnid)+"/code/"+string(cver)+"/run").B(&rreq), &res)
 
