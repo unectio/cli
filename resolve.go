@@ -42,7 +42,9 @@ func resolve(col *client.Collection, val string) api.ObjectId {
 		return api.ObjectId(val[1:])
 	}
 
-	var resp struct { Id api.ObjectId `json:"id"` }
+	var resp struct {
+		Id api.ObjectId `json:"id"`
+	}
 
 	l, err := getLogin()
 	if err != nil {
@@ -50,11 +52,17 @@ func resolve(col *client.Collection, val string) api.ObjectId {
 	}
 
 	err = l.MakeRequest(col.Lookup(val), &resp)
-	if err != nil {
-		fatal("Cannot resolve %s/%s: %s", col, val, err.Error())
+	err2 := l.MakeRequest(col.Info(val), &resp)
+
+	if err != nil && err2 != nil {
+		fatal("Cannot resolve  %s/%s: %s", col, val, err.Error())
 	}
 
-	return resp.Id
+	if err == nil {
+		return resp.Id
+	}
+
+	return api.ObjectId(val)
 }
 
 func generate(name string, typ string) string {
