@@ -172,12 +172,23 @@ func functionRun() {
 	}
 
 	var name, code, req string
-	x := strings.SplitN(os.Args[1], "/", 2)
-	if len(x) != 2 {
-		fatal("Specify function/code to run separated by \"/\" ")
+
+	if strings.Contains(os.Args[1], "/") {
+		x := strings.SplitN(os.Args[1], "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/code to run separated by \"/\" ")
+		}
+		name = x[0]
+		code = x[1]
+	} else {
+		code = os.Args[1]
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&name, "function", fndefault_value, fnusage)
+		flag.StringVar(&name, "f", fndefault_value, fnusage+" (shorthand)")
 	}
-	name = x[0]
-	code = x[1]
 	os.Args = os.Args[1:]
 
 	const (

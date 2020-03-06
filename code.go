@@ -33,6 +33,7 @@ import (
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -88,12 +89,23 @@ func (ce elementCode) long() []*field {
 func codeAdd(fcname *string) {
 	var fn, cname, lang, src string
 	var w int
-	x := strings.SplitN(*fcname, "/", 2)
-	if len(x) != 2 {
-		fatal("Specify function/code separated by \"/\" ")
+
+	if strings.Contains(*fcname, "/") {
+		x := strings.SplitN(*fcname, "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/code separated by \"/\" ")
+		}
+		fn = x[0]
+		cname = x[1]
+	} else {
+		cname = *fcname
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&fn, "function", fndefault_value, fnusage)
+		flag.StringVar(&fn, "f", fndefault_value, fnusage)
 	}
-	fn = x[0]
-	cname = x[1]
 	const (
 		langdefault_value = ""
 		langusage         = "language"
@@ -125,14 +137,24 @@ func codeAdd(fcname *string) {
 	showAddedElement(elementCode{&ci})
 }
 
-func codeList(_ *string) {
+func codeList(fcname *string) {
 	var fn string
-	const (
-		default_value = ""
-		usage         = "function name/id"
-	)
-	flag.StringVar(&fn, "function", default_value, usage)
-	flag.StringVar(&fn, "f", default_value, usage+" (shorthand)")
+
+	if fcname != nil && strings.HasSuffix(*fcname, "/") {
+		x := strings.SplitN(*fcname, "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/code separated by \"/\" ")
+		}
+		fn = x[0]
+		os.Args = os.Args[1:]
+	} else {
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&fn, "function", fndefault_value, fnusage)
+		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+	}
 	flag.Parse()
 
 	fid := resolve(fcol, fn)
@@ -148,13 +170,23 @@ func codeList(_ *string) {
 
 func codeDel(ver *string) {
 	var fn, cname string
-	x := strings.SplitN(*ver, "/", 2)
-	if len(x) != 2 {
-		fatal("Specify function/code separated by \"/\" ")
-	}
-	fn = x[0]
-	cname = x[1]
 
+	if strings.Contains(*ver, "/") {
+		x := strings.SplitN(*ver, "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/code separated by \"/\" ")
+		}
+		fn = x[0]
+		cname = x[1]
+	} else {
+		cname = *ver
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&fn, "function", fndefault_value, fnusage)
+		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+	}
 	flag.Parse()
 
 	fnid := resolve(fcol, fn)
@@ -167,12 +199,24 @@ func codeDel(ver *string) {
 func codeUpdate(ver *string) {
 	var fn, cname, src string
 	var w int
-	x := strings.SplitN(*ver, "/", 2)
-	if len(x) != 2 {
-		fatal("Specify function/code separated by \"/\" ")
+
+	if strings.Contains(*ver, "/") {
+		x := strings.SplitN(*ver, "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/code separated by \"/\" ")
+		}
+		fn = x[0]
+		cname = x[1]
+	} else {
+		cname = *ver
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&fn, "function", fndefault_value, fnusage)
+		flag.StringVar(&fn, "f", fndefault_value, fnusage)
 	}
-	fn = x[0]
-	cname = x[1]
+
 	const (
 		srcdefault_value = ""
 		srcusage         = "sources (file name or url or repo:<repo name>:path)"
@@ -200,12 +244,24 @@ func codeUpdate(ver *string) {
 
 func codeInfo(ver *string) {
 	var fn, cname string
-	x := strings.SplitN(*ver, "/", 2)
-	if len(x) != 2 {
-		fatal("Specify function/code separated by \"/\" ")
+
+	if strings.Contains(*ver, "/") {
+		x := strings.SplitN(*ver, "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/code separated by \"/\" ")
+		}
+		fn = x[0]
+		cname = x[1]
+	} else {
+		cname = *ver
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&fn, "function", fndefault_value, fnusage)
+		flag.StringVar(&fn, "f", fndefault_value, fnusage)
 	}
-	fn = x[0]
-	cname = x[1]
+
 	var only_code bool
 	const (
 		only_default_value = false

@@ -32,6 +32,7 @@ import (
 	"fmt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
+	"os"
 	"strings"
 )
 
@@ -97,12 +98,23 @@ func (te elementTg) long() []*field {
 
 func triggerAdd(name *string) {
 	var fn, tname string
-	x := strings.SplitN(*name, "/", 2)
-	if len(x) != 2 {
-		fatal("Specify function/trigger separated by \"/\" ")
+
+	if strings.Contains(*name, "/") {
+		x := strings.SplitN(*name, "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/trigger separated by \"/\" ")
+		}
+		fn = x[0]
+		tname = x[1]
+	} else {
+		tname = *name
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&fn, "function", fndefault_value, fnusage)
+		flag.StringVar(&fn, "f", fndefault_value, fnusage)
 	}
-	fn = x[0]
-	tname = x[1]
 
 	src := flag.String("s", "", "trigger source")
 	auth := flag.String("a", "", "URL trigger auth name/id")
@@ -147,11 +159,27 @@ func triggerAdd(name *string) {
 	showAddedElement(elementTg{&tra})
 }
 
-func triggerList(_ *string) {
-	fn := flag.String("f", "", "function name/id")
-	flag.Parse()
+func triggerList(fcname *string) {
+	var fn string
 
-	fid := resolve(fcol, *fn)
+	if fcname != nil && strings.HasSuffix(*fcname, "/") {
+		x := strings.SplitN(*fcname, "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/trigger separated by \"/\" ")
+		}
+		fn = x[0]
+		os.Args = os.Args[1:]
+	} else {
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&fn, "function", fndefault_value, fnusage)
+		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+	}
+
+	flag.Parse()
+	fid := resolve(fcol, fn)
 
 	var tgs []*api.FuncTriggerImage
 
@@ -164,12 +192,23 @@ func triggerList(_ *string) {
 
 func triggerDel(name *string) {
 	var fn, tname string
-	x := strings.SplitN(*name, "/", 2)
-	if len(x) != 2 {
-		fatal("Specify function/trigger separated by \"/\" ")
+
+	if strings.Contains(*name, "/") {
+		x := strings.SplitN(*name, "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/trigger separated by \"/\" ")
+		}
+		fn = x[0]
+		tname = x[1]
+	} else {
+		tname = *name
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&fn, "function", fndefault_value, fnusage)
+		flag.StringVar(&fn, "f", fndefault_value, fnusage)
 	}
-	fn = x[0]
-	tname = x[1]
 	flag.Parse()
 
 	fnid := resolve(fcol, fn)
@@ -181,12 +220,23 @@ func triggerDel(name *string) {
 
 func triggerInfo(name *string) {
 	var fn, tname string
-	x := strings.SplitN(*name, "/", 2)
-	if len(x) != 2 {
-		fatal("Specify function/trigger separated by \"/\" ")
+
+	if strings.Contains(*name, "/") {
+		x := strings.SplitN(*name, "/", 2)
+		if len(x) != 2 {
+			fatal("Specify function/trigger separated by \"/\" ")
+		}
+		fn = x[0]
+		tname = x[1]
+	} else {
+		tname = *name
+		const (
+			fndefault_value = ""
+			fnusage         = "function name/id"
+		)
+		flag.StringVar(&fn, "function", fndefault_value, fnusage)
+		flag.StringVar(&fn, "f", fndefault_value, fnusage)
 	}
-	fn = x[0]
-	tname = x[1]
 	flag.Parse()
 
 	fnid := resolve(fcol, fn)

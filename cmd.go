@@ -105,6 +105,10 @@ func doTarget(c int) {
 		}
 		name = &os.Args[1]
 		os.Args = os.Args[1:]
+	} else {
+		if len(os.Args) > 1 {
+			name = &os.Args[1]
+		}
 	}
 
 	tgt := getTarget(t)
