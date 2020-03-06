@@ -31,11 +31,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"strings"
-	"os"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	rq "github.com/unectio/util/request"
+	"os"
+	"strings"
 )
 
 var fcol = apilet.Functions
@@ -87,7 +87,7 @@ func functionAdd(name *string) {
 	var env string
 	const (
 		default_value = ""
-		usage   = "environment (key=val;...)"
+		usage         = "environment (key=val;...)"
 	)
 	flag.StringVar(&env, "environment", default_value, usage)
 	flag.StringVar(&env, "e", default_value, usage+" (shorthand)")
@@ -124,7 +124,7 @@ func functionInfo(name *string) {
 	var inf string
 	const (
 		default_value = ""
-		usage   = "what to show (logs, stats)"
+		usage         = "what to show (logs, stats)"
 	)
 	flag.StringVar(&inf, "information", default_value, usage)
 	flag.StringVar(&inf, "i", default_value, usage+" (shorthand)")
@@ -168,25 +168,26 @@ func functionDelete(name *string) {
 func functionRun() {
 
 	if len(os.Args) <= 1 {
-		fatal("Specify function to run")
+		fatal("Specify function/code to run")
 	}
 
-	var  name, code, req string
-	name  = os.Args[1]
+	var name, code, req string
+	x := strings.SplitN(os.Args[1], "/", 2)
+	if len(x) != 2 {
+		fatal("Specify function/code to run separated by \"/\" ")
+	}
+	name = x[0]
+	code = x[1]
 	os.Args = os.Args[1:]
 
 	const (
-		cdefault_value = ""
-		cusage   = "code name"
 		rdefault_value = ""
-		rusage   = "request (JSON string)"
+		rusage         = "request (JSON string)"
 	)
-	flag.StringVar(&code, "code", cdefault_value, cusage)
-	flag.StringVar(&code, "c", cdefault_value, cusage+" (shorthand)")
 	flag.StringVar(&req, "rq", rdefault_value, rusage)
 	flag.StringVar(&req, "request", rdefault_value, rusage+" (shorthand)")
 	flag.Parse()
-	
+
 	var rreq api.FuncRun
 	var res api.RunResponse
 
@@ -217,7 +218,7 @@ func functionUpdate(name *string) {
 	var env string
 	const (
 		default_value = ""
-		usage   = "environment (key=val;...)"
+		usage         = "environment (key=val;...)"
 	)
 	flag.StringVar(&env, "environment", default_value, usage)
 	flag.StringVar(&env, "e", default_value, usage+" (shorthand)")

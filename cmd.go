@@ -28,48 +28,48 @@
 package main
 
 import (
-	"os"
 	"fmt"
+	"os"
 )
 
 const (
-	CmdAdd = 1
-	CmdDel = 2
-	CmdList = 3
+	CmdAdd    = 1
+	CmdDel    = 2
+	CmdList   = 3
 	CmdUpdate = 4
-	CmdInfo = 5
+	CmdInfo   = 5
 )
 
 type Command struct {
-	Do	func()
+	Do func()
 }
 
 func getCommand(c string) *Command {
 	switch c {
 	case "add", "create":
-		return &Command { Do: doAdd }
+		return &Command{Do: doAdd}
 	case "del", "delete":
-		return &Command { Do: doDel }
+		return &Command{Do: doDel}
 	case "ls", "list":
-		return &Command { Do: doList }
+		return &Command{Do: doList}
 	case "upd", "update", "set":
-		return &Command { Do: doUpdate }
+		return &Command{Do: doUpdate}
 	case "info", "get":
-		return &Command { Do: doInfo }
+		return &Command{Do: doInfo}
 	case "run":
-		return &Command { Do: functionRun }
+		return &Command{Do: functionRun}
 	case "load":
-		return &Command { Do: loadSpec }
+		return &Command{Do: loadSpec}
 	}
 
-	return &Command { Do: func() {
+	return &Command{Do: func() {
 		fmt.Printf("Unknown command %s\n", c)
 		usage_commands()
-	} }
+	}}
 }
 
 func listCommands() []string {
-	return []string {
+	return []string{
 		"ls   | list   <tgt>",
 		"add  | create <tgt>",
 		"del  | delete <tgt>",
@@ -80,11 +80,11 @@ func listCommands() []string {
 	}
 }
 
-func doAdd() { doTarget(CmdAdd) }
-func doDel() { doTarget(CmdDel) }
-func doList() { doTarget(CmdList) }
+func doAdd()    { doTarget(CmdAdd) }
+func doDel()    { doTarget(CmdDel) }
+func doList()   { doTarget(CmdList) }
 func doUpdate() { doTarget(CmdUpdate) }
-func doInfo() { doTarget(CmdInfo) }
+func doInfo()   { doTarget(CmdInfo) }
 
 func doTarget(c int) {
 	var name *string
