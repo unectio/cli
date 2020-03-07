@@ -140,12 +140,8 @@ func codeAdd(fcname *string) {
 func codeList(fcname *string) {
 	var fn string
 
-	if fcname != nil && strings.HasSuffix(*fcname, "/") {
-		x := strings.SplitN(*fcname, "/", 2)
-		if len(x) != 2 {
-			fatal("Specify function/code separated by \"/\" ")
-		}
-		fn = x[0]
+	if fcname != nil && strings.HasPrefix(*fcname, "-") == false {
+		fn = *fcname
 		os.Args = os.Args[1:]
 	} else {
 		const (
