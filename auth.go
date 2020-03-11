@@ -29,15 +29,16 @@ package main
 
 import (
 	"fmt"
-	"flag"
+	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
+	"os"
 )
 
 var authcol = apilet.AuthMethods
 
 func doAuth(cmd int, name *string) {
-	a_actions := map[int]func(namep *string) {}
+	a_actions := map[int]func(namep *string){}
 	a_actions[CmdAdd] = authAdd
 	a_actions[CmdList] = authList
 	a_actions[CmdInfo] = authInfo
@@ -47,14 +48,16 @@ func doAuth(cmd int, name *string) {
 }
 
 func authAdd(name *string) {
-	key := flag.String("k", "", "jwt key (base64-encoded or auto)")
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var key = goopt.String([]string{"-k", "--key"}, "", "jwt key (base64-encoded or auto)")
+	goopt.Parse(nil)
 
 	ai := api.AuthMethodImage{}
 	ai.Name = generate(*name, "am")
 
 	if *key != "" {
-		ai.JWT = &api.AuthJWTImage { Key: *key }
+		ai.JWT = &api.AuthJWTImage{Key: *key}
 	}
 
 	makeReq(authcol.Add(&ai), &ai)
@@ -63,7 +66,9 @@ func authAdd(name *string) {
 }
 
 func authDel(name *string) {
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	aid := resolve(authcol, *name)
 
@@ -72,6 +77,9 @@ func authDel(name *string) {
 
 func authList(_ *string) {
 	var as []*api.AuthMethodImage
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	makeReq(authcol.List(), &as)
 
@@ -81,7 +89,9 @@ func authList(_ *string) {
 }
 
 func authInfo(name *string) {
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	aid := resolve(authcol, *name)
 

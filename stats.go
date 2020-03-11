@@ -29,7 +29,6 @@ package main
 
 import (
 	"fmt"
-	"flag"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 )
@@ -37,7 +36,6 @@ import (
 var stprop = apilet.FnStats
 
 func functionStats(name *string) {
-	flag.Parse()
 
 	fid := resolve(fcol, *name)
 

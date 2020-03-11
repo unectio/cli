@@ -29,15 +29,16 @@ package main
 
 import (
 	"fmt"
-	"flag"
+	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
+	"os"
 )
 
 var repcol = apilet.Repos
 
 func doRepo(cmd int, name *string) {
-	rep_actions := map[int]func(*string) {}
+	rep_actions := map[int]func(*string){}
 
 	rep_actions[CmdAdd] = repoAdd
 	rep_actions[CmdList] = repoList
@@ -48,16 +49,12 @@ func doRepo(cmd int, name *string) {
 }
 
 func repoAdd(name *string) {
-	var url string
-	const (
-		defaultUrl = ""
-		usageUrl = "repo URL (git)"
-	)
-	flag.StringVar(&url, "url", defaultUrl, usageUrl)
-	flag.StringVar(&url, "u", defaultUrl, usageUrl+" (shorthand)")
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	var url = goopt.String([]string{"-u", "--url"}, "", "repo URL (git)")
+	goopt.Parse(nil)
 
-	if url == "" {
+	if *url == "" {
 		fatal("No URL specified, mind using -u or --url option")
 	}
 
@@ -65,27 +62,30 @@ func repoAdd(name *string) {
 
 	rp.Name = generate(*name, "repo")
 	rp.Type = "git"
-	rp.URL = url
-
+	rp.URL = *url
 	makeReq(repcol.Add(&rp), &rp)
 
 	fmt.Printf("Added repo (id %s)\n", rp.Id)
 }
 
 func repoDel(name *string) {
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	rpid := resolve(repcol, *name)
-	
+
 	makeReq(repcol.Delete(string(rpid)), nil)
-	
+
 	fmt.Printf("Deleted repo (id %s)\n", rpid)
 }
 
 func repoList(_ *string) {
 	var rps []*api.RepoImage
 
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	makeReq(repcol.List(), &rps)
 
@@ -100,7 +100,9 @@ func repoList(_ *string) {
 }
 
 func repoInfo(name *string) {
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	rpid := resolve(repcol, *name)
 

@@ -29,16 +29,17 @@ package main
 
 import (
 	"fmt"
-	"flag"
-	"strings"
+	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
+	"os"
+	"strings"
 )
 
 var seccol = apilet.Secrets
 
 func doSecret(cmd int, name *string) {
-	sec_actions := map[int]func(*string) {}
+	sec_actions := map[int]func(*string){}
 
 	sec_actions[CmdAdd] = secretAdd
 	sec_actions[CmdList] = secretList
@@ -63,12 +64,14 @@ func parseKV(kv string) map[string]string {
 }
 
 func secretAdd(name *string) {
-	kv := flag.String("kv", "", "table (k=v;...)")
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var kv = goopt.String([]string{"-k", "--key"}, "", "table (k=v;...)")
+	goopt.Parse(nil)
 
 	pl := parseKV(*kv)
 
-	sec := api.SecretImage {}
+	sec := api.SecretImage{}
 
 	sec.Name = generate(*name, "sec")
 	sec.Payload = pl
@@ -79,7 +82,9 @@ func secretAdd(name *string) {
 }
 
 func secretDelete(name *string) {
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	secid := resolve(seccol, *name)
 
@@ -89,7 +94,9 @@ func secretDelete(name *string) {
 func secretList(_ *string) {
 	var secs []*api.SecretImage
 
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	makeReq(seccol.List(), &secs)
 
@@ -99,7 +106,9 @@ func secretList(_ *string) {
 }
 
 func secretInfo(name *string) {
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	secid := resolve(seccol, *name)
 

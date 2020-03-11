@@ -28,9 +28,9 @@
 package main
 
 import (
-	"os"
 	"fmt"
-	"flag"
+	goopt "github.com/droundy/goopt"
+	"os"
 )
 
 const (
@@ -38,7 +38,7 @@ const (
 )
 
 func fatal(msg string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, msg + "\n", args...)
+	fmt.Fprintf(os.Stderr, msg+"\n", args...)
 	os.Exit(1)
 }
 
@@ -52,6 +52,15 @@ func usage_summary() {
 	fmt.Printf("    '%s <command> <target> --help' for target help\n", os.Args[0])
 	fmt.Printf("    '%s <command> <target> <object> --help' for help with object arguments\n", os.Args[0])
 	fmt.Printf("\nDefault configuration file is %s\n\n", defaultConfig)
+}
+
+func usage_commands_string() string {
+	usage := fmt.Sprintf("Commands (<tgt> means command requires a target):\n")
+	cmds := listCommands()
+	for _, cmd := range cmds {
+		usage += fmt.Sprintf("\t%s\n", cmd)
+	}
+	return usage
 }
 
 func usage_commands() {
@@ -70,21 +79,56 @@ func usage_targets() {
 	}
 }
 
-var debug *bool
-var dryrun *bool
+func usage_targets_string() string {
+	usage := fmt.Sprintf("Recognized targets:\n")
+	tgts := listTargets()
+	for _, tgt := range tgts {
+		usage += fmt.Sprintf("\t%s\n", tgt)
+	}
+	return usage
+}
+
+func usage_footer_string() string {
+	usage := fmt.Sprintf("\nTry '%s <command> --help' for command help\n", os.Args[0])
+	usage += fmt.Sprintf("    '%s <command> <target> --help' for target help\n", os.Args[0])
+	usage += fmt.Sprintf("    '%s <command> <target> <object> --help' for help with object arguments\n", os.Args[0])
+	usage += fmt.Sprintf("Default configuration file is %s", defaultConfig)
+	return usage
+}
+
+func usage_short_string() string {
+	return fmt.Sprintf("Usage: %s <command> [<target>] [<object>] [<options>]\n", os.Args[0])
+}
+
+func usage_string() string {
+	usage := ""
+	if goopt.Summary != "" {
+		usage += fmt.Sprintf("%s", goopt.Summary)
+	}
+	usage += fmt.Sprintf("\n%s", goopt.Help())
+	if goopt.ExtraUsage != "" {
+		usage += fmt.Sprintf("%s\n", goopt.ExtraUsage)
+	}
+	return usage
+}
+
+var debug = goopt.Flag([]string{"-d", "--debug"}, []string{}, "Pring debugging info", "")
+var dryrun = goopt.Flag([]string{"--dry-run"}, []string{}, "Do not do requests for real", "")
 
 func main() {
-	if len(os.Args) <= 1 || os.Args[1] == "--help" {
-		usage_summary()
+	goopt.Usage = usage_string
+	goopt.Summary = usage_short_string() + usage_commands_string() + "\n" + usage_targets_string()
+	goopt.ExtraUsage = usage_footer_string()
+	goopt.Version = "1.4"
+
+	if len(os.Args) <= 1 || os.Args[1] == "--help" || os.Args[1] == "-h" {
+		fmt.Println(goopt.Usage())
 		os.Exit(1)
 	}
 
-	debug = flag.Bool("debug", false, "Print debugging info")
-	dryrun = flag.Bool("dry-run", false, "Do not do requests for real")
-
 	/* Usage is always $ lets <command> [<object>] [<options>] */
 	c := os.Args[1]
-	os.Args = os.Args[1:]
+	//	os.Args = os.Args[1:]
 
 	cmd := getCommand(c)
 	cmd.Do()

@@ -28,14 +28,14 @@
 package main
 
 import (
-	"os"
-	"fmt"
-	"flag"
 	"bufio"
 	"errors"
-	"strings"
+	"fmt"
+	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
+	"os"
+	"strings"
 )
 
 var rtcol = apilet.Routers
@@ -44,7 +44,7 @@ func init() {
 }
 
 func doRouter(cmd int, name *string) {
-	rt_actions := map[int]func(*string) {}
+	rt_actions := map[int]func(*string){}
 
 	rt_actions[CmdAdd] = routerAdd
 	rt_actions[CmdList] = routerList
@@ -72,9 +72,9 @@ func parseRule(rule string) (*api.RouteRuleImage, error) {
 
 	fnid := resolve(fcol, rule[sep2+1:])
 
-	ret := &api.RouteRuleImage {}
+	ret := &api.RouteRuleImage{}
 	ret.Methods = rule[:sep1]
-	ret.Path = rule[sep1+1:sep2]
+	ret.Path = rule[sep1+1 : sep2]
 	ret.FnId = fnid
 
 	return ret, nil
@@ -149,9 +149,11 @@ func parseTable(table, file string) ([]*api.RouteRuleImage, error) {
 var muxprop = apilet.RtMux
 
 func routerUpdate(name *string) {
-	table := flag.String("t", "", "table (m,.../path=fn:...)")
-	table_from := flag.String("tf", "", "file to read table from (in info -M format)")
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var table = goopt.String([]string{"-t", "--table"}, "", "table (m,.../path=fn:...)")
+	var table_from = goopt.String([]string{"--tablefrom"}, "", "file to read table from (in info -M format)")
+	goopt.Parse(nil)
 
 	rtid := resolve(rtcol, *name)
 
@@ -166,10 +168,12 @@ func routerUpdate(name *string) {
 }
 
 func routerAdd(name *string) {
-	table := flag.String("t", "", "table (m,.../path=fn:...)")
-	table_from := flag.String("tf", "", "file to read table from (in info -M format)")
-	url := flag.String("u", "", "custom URL to work on")
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var table = goopt.String([]string{"-t", "--table"}, "", "table (m,.../path=fn:...)")
+	var table_from = goopt.String([]string{"--tablefrom"}, "", "file to read table from (in info -M format)")
+	var url = goopt.String([]string{"-u", "--url"}, "", "custom URL to work on")
+	goopt.Parse(nil)
 
 	mux, err := parseTable(*table, *table_from)
 	if err != nil {
@@ -193,7 +197,9 @@ func routerAdd(name *string) {
 }
 
 func routerDelete(name *string) {
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	rtid := resolve(rtcol, *name)
 
@@ -203,7 +209,9 @@ func routerDelete(name *string) {
 func routerList(_ *string) {
 	var rts []*api.RouterImage
 
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
 	makeReq(rtcol.List(), &rts)
 
@@ -213,8 +221,10 @@ func routerList(_ *string) {
 }
 
 func routerInfo(name *string) {
-	mux_only := flag.Bool("M", false, "Show only the mux")
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var mux_only = goopt.Flag([]string{"-M", "--muxonly"}, []string{}, "Show only the mux", "")
+	goopt.Parse(nil)
 
 	rtid := resolve(rtcol, *name)
 

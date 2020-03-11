@@ -29,16 +29,13 @@ package main
 
 import (
 	"fmt"
-	"flag"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 )
 
 var logprop = apilet.FnLogs
 
-func functionLogs(name *string) {
-	lfor := flag.String("f", "", "for what period (duration since now)")
-	flag.Parse()
+func functionLogs(name *string, lfor *string) {
 
 	fid := resolve(fcol, *name)
 

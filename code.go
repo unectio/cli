@@ -28,8 +28,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	"io/ioutil"
@@ -87,8 +87,15 @@ func (ce elementCode) long() []*field {
 }
 
 func codeAdd(fcname *string) {
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
 	var fn, cname, lang, src string
 	var w int
+	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	var vlang = goopt.String([]string{"-l", "--language"}, "", "code language")
+	var vsrc = goopt.String([]string{"-s", "--source"}, "", "sources (file name or url or repo:<repo name>:path)")
+	var vw = goopt.Int([]string{"-w", "--weight"}, 0, "code weight")
+	goopt.Parse(nil)
 
 	if strings.Contains(*fcname, "/") {
 		x := strings.SplitN(*fcname, "/", 2)
@@ -99,28 +106,11 @@ func codeAdd(fcname *string) {
 		cname = x[1]
 	} else {
 		cname = *fcname
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&fn, "function", fndefault_value, fnusage)
-		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+		fn = *vfn
 	}
-	const (
-		langdefault_value = ""
-		langusage         = "language"
-		srcdefault_value  = ""
-		srcusage          = "sources (file name or url or repo:<repo name>:path)"
-		wdefault_value    = 0
-		wusage            = "code weight"
-	)
-	flag.StringVar(&lang, "language", langdefault_value, langusage)
-	flag.StringVar(&lang, "l", langdefault_value, langusage+" (shorthand)")
-	flag.StringVar(&src, "source", srcdefault_value, srcusage)
-	flag.StringVar(&src, "s", srcdefault_value, srcusage+" (shorthand)")
-	flag.IntVar(&w, "weight", wdefault_value, wusage)
-	flag.IntVar(&w, "w", wdefault_value, wusage+" (shorthand)")
-	flag.Parse()
+	lang = *vlang
+	src = *vsrc
+	w = *vw
 
 	fid := resolve(fcol, fn)
 
@@ -139,19 +129,16 @@ func codeAdd(fcname *string) {
 
 func codeList(fcname *string) {
 	var fn string
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	goopt.Parse(nil)
 
 	if fcname != nil && strings.HasPrefix(*fcname, "-") == false {
 		fn = *fcname
-		os.Args = os.Args[1:]
 	} else {
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&fn, "function", fndefault_value, fnusage)
-		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+		fn = *vfn
 	}
-	flag.Parse()
 
 	fid := resolve(fcol, fn)
 
@@ -166,6 +153,10 @@ func codeList(fcname *string) {
 
 func codeDel(ver *string) {
 	var fn, cname string
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	goopt.Parse(nil)
 
 	if strings.Contains(*ver, "/") {
 		x := strings.SplitN(*ver, "/", 2)
@@ -176,14 +167,8 @@ func codeDel(ver *string) {
 		cname = x[1]
 	} else {
 		cname = *ver
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&fn, "function", fndefault_value, fnusage)
-		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+		fn = *vfn
 	}
-	flag.Parse()
 
 	fnid := resolve(fcol, fn)
 	xcol := ccol.Sub(string(fnid))
@@ -195,6 +180,12 @@ func codeDel(ver *string) {
 func codeUpdate(ver *string) {
 	var fn, cname, src string
 	var w int
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	var vsrc = goopt.String([]string{"-s", "--source"}, "", "sources (file name or url or repo:<repo name>:path)")
+	var vw = goopt.Int([]string{"-w", "--weight"}, 0, "code weight")
+	goopt.Parse(nil)
 
 	if strings.Contains(*ver, "/") {
 		x := strings.SplitN(*ver, "/", 2)
@@ -205,25 +196,11 @@ func codeUpdate(ver *string) {
 		cname = x[1]
 	} else {
 		cname = *ver
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&fn, "function", fndefault_value, fnusage)
-		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+		fn = *vfn
 	}
 
-	const (
-		srcdefault_value = ""
-		srcusage         = "sources (file name or url or repo:<repo name>:path)"
-		wdefault_value   = 0
-		wusage           = "code weight"
-	)
-	flag.StringVar(&src, "source", srcdefault_value, srcusage)
-	flag.StringVar(&src, "s", srcdefault_value, srcusage+" (shorthand)")
-	flag.IntVar(&w, "weight", wdefault_value, wusage)
-	flag.IntVar(&w, "w", wdefault_value, wusage+" (shorthand)")
-	flag.Parse()
+	src = *vsrc
+	w = *vw
 
 	var ci api.CodeImage
 
@@ -240,6 +217,11 @@ func codeUpdate(ver *string) {
 
 func codeInfo(ver *string) {
 	var fn, cname string
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	var voc = goopt.Flag([]string{"-C", "--code"}, []string{}, "Show code only", "")
+	goopt.Parse(nil)
 
 	if strings.Contains(*ver, "/") {
 		x := strings.SplitN(*ver, "/", 2)
@@ -250,22 +232,11 @@ func codeInfo(ver *string) {
 		cname = x[1]
 	} else {
 		cname = *ver
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&fn, "function", fndefault_value, fnusage)
-		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+		fn = *vfn
 	}
 
 	var only_code bool
-	const (
-		only_default_value = false
-		only_usage         = "show code only"
-	)
-	flag.BoolVar(&only_code, "code", only_default_value, only_usage)
-	flag.BoolVar(&only_code, "C", only_default_value, only_usage+" (shorthand)")
-	flag.Parse()
+	only_code = *voc
 
 	fnid := resolve(fcol, fn)
 	xcol := ccol.Sub(string(fnid))

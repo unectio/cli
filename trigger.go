@@ -28,8 +28,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	"os"
@@ -98,6 +98,15 @@ func (te elementTg) long() []*field {
 
 func triggerAdd(name *string) {
 	var fn, tname string
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	var vsrc = goopt.String([]string{"--tsource"}, "", "trigger source")
+	var vurl = goopt.String([]string{"-u", "--url"}, "", "trigger URL")
+	var va = goopt.String([]string{"-a", "--auth"}, "", "URL trigger auth name/id")
+	var vct = goopt.String([]string{"--crontab"}, "", "Cron trigger tab")
+	var vca = goopt.String([]string{"--cronargs"}, "", "Cron trigger args in foo=bar:... format")
+	goopt.Parse(nil)
 
 	if strings.Contains(*name, "/") {
 		x := strings.SplitN(*name, "/", 2)
@@ -108,43 +117,31 @@ func triggerAdd(name *string) {
 		tname = x[1]
 	} else {
 		tname = *name
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&fn, "function", fndefault_value, fnusage)
-		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+		fn = *vfn
 	}
-
-	src := flag.String("s", "", "trigger source")
-	auth := flag.String("a", "", "URL trigger auth name/id")
-	url := flag.String("u", "", "URL trigger URL")
-	tab := flag.String("t", "", "Cron trigger tab")
-	cargs := flag.String("ca", "", "Cron trigger args in foo=bar:... format")
-	flag.Parse()
 
 	fid := resolve(fcol, fn)
 
 	tra := api.FuncTriggerImage{}
 	tra.Name = generate(tname, "tg")
 
-	switch *src {
+	switch *vsrc {
 	case "url":
 		tra.URL = &api.URLTrigImage{URL: api.AutoValue}
-		if *auth != "" {
-			tra.URL.AuthId = resolve(authcol, *auth)
+		if *va != "" {
+			tra.URL.AuthId = resolve(authcol, *va)
 		}
-		if *url != "" {
-			tra.URL.URL = api.URLProjectPfx + *url
+		if *vurl != "" {
+			tra.URL.URL = api.URLProjectPfx + *vurl
 		}
 	case "cron":
 		tra.Cron = &api.CronTrigImage{}
-		if *tab != "" {
-			tra.Cron.Tab = *tab
+		if *vct != "" {
+			tra.Cron.Tab = *vct
 		}
-		if *cargs != "" {
+		if *vca != "" {
 			tra.Cron.Args = make(map[string]string)
-			for _, a := range strings.Split(*cargs, ":") {
+			for _, a := range strings.Split(*vca, ":") {
 				x := strings.SplitN(a, "=", 2)
 				if len(x) != 2 {
 					fatal("Bad cron arg %s", a)
@@ -161,20 +158,17 @@ func triggerAdd(name *string) {
 
 func triggerList(fcname *string) {
 	var fn string
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	goopt.Parse(nil)
 
 	if fcname != nil && strings.HasPrefix(*fcname, "-") == false {
 		fn = *fcname
-		os.Args = os.Args[1:]
 	} else {
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&fn, "function", fndefault_value, fnusage)
-		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+		fn = *vfn
 	}
 
-	flag.Parse()
 	fid := resolve(fcol, fn)
 
 	var tgs []*api.FuncTriggerImage
@@ -188,6 +182,10 @@ func triggerList(fcname *string) {
 
 func triggerDel(name *string) {
 	var fn, tname string
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	goopt.Parse(nil)
 
 	if strings.Contains(*name, "/") {
 		x := strings.SplitN(*name, "/", 2)
@@ -198,14 +196,8 @@ func triggerDel(name *string) {
 		tname = x[1]
 	} else {
 		tname = *name
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&fn, "function", fndefault_value, fnusage)
-		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+		fn = *vfn
 	}
-	flag.Parse()
 
 	fnid := resolve(fcol, fn)
 	tcol := tgcol.Sub(string(fnid))
@@ -216,6 +208,10 @@ func triggerDel(name *string) {
 
 func triggerInfo(name *string) {
 	var fn, tname string
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	goopt.Parse(nil)
 
 	if strings.Contains(*name, "/") {
 		x := strings.SplitN(*name, "/", 2)
@@ -226,14 +222,8 @@ func triggerInfo(name *string) {
 		tname = x[1]
 	} else {
 		tname = *name
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&fn, "function", fndefault_value, fnusage)
-		flag.StringVar(&fn, "f", fndefault_value, fnusage)
+		fn = *vfn
 	}
-	flag.Parse()
 
 	fnid := resolve(fcol, fn)
 	tcol := tgcol.Sub(string(fnid))

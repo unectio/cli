@@ -29,7 +29,9 @@ package main
 
 import (
 	"fmt"
+	goopt "github.com/droundy/goopt"
 	"os"
+	"strings"
 )
 
 const (
@@ -63,8 +65,9 @@ func getCommand(c string) *Command {
 	}
 
 	return &Command{Do: func() {
-		fmt.Printf("Unknown command %s\n", c)
-		usage_commands()
+		goopt.Summary = fmt.Sprintf("Unknown command \"%s\"\n\n", c) + usage_commands_string()
+		goopt.ExtraUsage = ""
+		fmt.Println(goopt.Usage())
 	}}
 }
 
@@ -89,25 +92,26 @@ func doInfo()   { doTarget(CmdInfo) }
 func doTarget(c int) {
 	var name *string
 
-	if len(os.Args) <= 1 || os.Args[1] == "--help" {
-		fmt.Printf("Specify a target\n")
-		usage_targets()
+	if len(os.Args) <= 2 || os.Args[2] == "--help" || os.Args[2] == "-h" {
+		goopt.Summary = fmt.Sprintf("Specify a target\n\n") + usage_targets_string()
+		goopt.ExtraUsage = ""
+		fmt.Println(goopt.Usage())
 		return
 	}
 
-	t := os.Args[1]
-	os.Args = os.Args[1:]
+	t := os.Args[2]
 
 	if c != CmdList {
-		if len(os.Args) <= 1 {
-			fmt.Print("Specify an object name or %id for operations with existing objects\n")
+		if len(os.Args) <= 3 || strings.HasPrefix(os.Args[3], "-") {
+			goopt.Summary = fmt.Sprint("Specify an object name or %id \n")
+			goopt.ExtraUsage = ""
+			fmt.Println(goopt.Usage())
 			return
 		}
-		name = &os.Args[1]
-		os.Args = os.Args[1:]
+		name = &os.Args[3]
 	} else {
-		if len(os.Args) > 1 {
-			name = &os.Args[1]
+		if len(os.Args) > 3 {
+			name = &os.Args[3]
 		}
 	}
 

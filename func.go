@@ -29,8 +29,8 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
+	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	rq "github.com/unectio/util/request"
@@ -84,20 +84,16 @@ func (fe elementFn) long() []*field {
 }
 
 func functionAdd(name *string) {
-	var env string
-	const (
-		default_value = ""
-		usage         = "environment (key=val;...)"
-	)
-	flag.StringVar(&env, "environment", default_value, usage)
-	flag.StringVar(&env, "e", default_value, usage+" (shorthand)")
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var env = goopt.String([]string{"-e", "--environment"}, "", "environment (key=val;...)")
+	goopt.Parse(nil)
 
 	fa := api.FunctionImage{}
 	fa.Name = generate(*name, "fn")
 
-	if env != "" {
-		fa.Env = parseEnv(env)
+	if *env != "" {
+		fa.Env = parseEnv(*env)
 	}
 
 	makeReq(fcol.Add(&fa), &fa)
@@ -112,7 +108,10 @@ func parseEnv(envs string) []string {
 func functionList(_ *string) {
 	var fns []*api.FunctionImage
 
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
+
 	makeReq(fcol.List(), &fns)
 
 	for _, fn := range fns {
@@ -121,20 +120,18 @@ func functionList(_ *string) {
 }
 
 func functionInfo(name *string) {
-	var inf string
-	const (
-		default_value = ""
-		usage         = "what to show (logs, stats)"
-	)
-	flag.StringVar(&inf, "information", default_value, usage)
-	flag.StringVar(&inf, "i", default_value, usage+" (shorthand)")
-	flag.Parse()
 
-	switch inf {
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var inf = goopt.String([]string{"-i", "--information"}, "", "what to show (logs, stats) ")
+	var lfor = goopt.String([]string{"--duration"}, "", "for what period logs to show (duration since now)")
+	goopt.Parse(nil)
+
+	switch *inf {
 	case "stats":
 		functionStats(name)
 	case "logs":
-		functionLogs(name)
+		functionLogs(name, lfor)
 	default:
 		functionCommonInfo(name)
 	}
@@ -151,7 +148,9 @@ func functionCommonInfo(name *string) {
 
 func functionDelete(name *string) {
 
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 	fnid := resolve(fcol, *name)
 
 	var cis []*api.CodeImage
@@ -167,37 +166,29 @@ func functionDelete(name *string) {
 
 func functionRun() {
 
-	if len(os.Args) <= 1 {
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	if len(os.Args) <= 2 {
 		fatal("Specify function/code to run")
 	}
 
 	var name, code, req string
+	var vname = goopt.String([]string{"-f", "--function"}, "", "function name/id")
+	var vreq = goopt.String([]string{"-r", "--request"}, "", "request (JSON string)")
+	goopt.Parse(nil)
 
-	if strings.Contains(os.Args[1], "/") {
-		x := strings.SplitN(os.Args[1], "/", 2)
+	if strings.Contains(os.Args[2], "/") {
+		x := strings.SplitN(os.Args[2], "/", 2)
 		if len(x) != 2 {
 			fatal("Specify function/code to run separated by \"/\" ")
 		}
 		name = x[0]
 		code = x[1]
 	} else {
-		code = os.Args[1]
-		const (
-			fndefault_value = ""
-			fnusage         = "function name/id"
-		)
-		flag.StringVar(&name, "function", fndefault_value, fnusage)
-		flag.StringVar(&name, "f", fndefault_value, fnusage+" (shorthand)")
+		code = os.Args[2]
+		name = *vname
 	}
-	os.Args = os.Args[1:]
-
-	const (
-		rdefault_value = ""
-		rusage         = "request (JSON string)"
-	)
-	flag.StringVar(&req, "rq", rdefault_value, rusage)
-	flag.StringVar(&req, "request", rdefault_value, rusage+" (shorthand)")
-	flag.Parse()
+	req = *vreq
 
 	var rreq api.FuncRun
 	var res api.RunResponse
@@ -226,20 +217,16 @@ func functionRun() {
 }
 
 func functionUpdate(name *string) {
-	var env string
-	const (
-		default_value = ""
-		usage         = "environment (key=val;...)"
-	)
-	flag.StringVar(&env, "environment", default_value, usage)
-	flag.StringVar(&env, "e", default_value, usage+" (shorthand)")
-	flag.Parse()
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	var env = goopt.String([]string{"-e", "--environment"}, "", "environment (key=val;...)")
+	goopt.Parse(nil)
 
 	fnid := resolve(fcol, *name)
 
 	switch {
-	case env != "":
-		functionUpdateEnv(fnid, env)
+	case *env != "":
+		functionUpdateEnv(fnid, *env)
 	}
 }
 
