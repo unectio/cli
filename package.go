@@ -35,7 +35,7 @@ import (
 	"os"
 )
 
-var pcol = apilet.Packages
+var pcols = apilet.PkgLists
 
 func doPackage(cmd int, name *string) {
 	pk_actions := map[int]func(name *string){}
@@ -97,19 +97,20 @@ func packageAdd(name *string) {
 	pa.Name = *name
 	pa.Version = *ver
 
-	makeReq(pcol.Add(&pa), &pa)
+	makeReq(pcols.Sub(*lang).Add(&pa), &pa)
 
 	showAddedElement(elementPk{&pa})
 }
 
 func packageList(_ *string) {
 	var pks []*api.PkgImage
+	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
 
 	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
 	goopt.ExtraUsage = ""
 	goopt.Parse(nil)
 
-	makeReq(pcol.List(), &pks)
+	makeReq(pcols.Sub(*lang).List(), &pks)
 
 	for _, pk := range pks {
 		showListElement(elementPk{pk})
@@ -118,17 +119,19 @@ func packageList(_ *string) {
 
 func packageInfo(name *string) {
 	var pk api.PkgImage
+	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
 
-	makeReq(pcol.Info(*name), &pk)
+	makeReq(pcols.Sub(*lang).Info(*name), &pk)
 
 	showInfoElement(elementPk{&pk})
 }
 
 func packageDelete(name *string) {
+	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
 
 	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
 	goopt.ExtraUsage = ""
 	goopt.Parse(nil)
 
-	makeReq(pcol.Delete(*name), nil)
+	makeReq(pcols.Sub(*lang).Delete(*name), nil)
 }
