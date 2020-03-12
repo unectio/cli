@@ -32,6 +32,7 @@ import (
 	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
+	"net/url"
 	"os"
 )
 
@@ -89,9 +90,6 @@ func packageAdd(name *string) {
 	if *lang == "" {
 		fatal("Specify language")
 	}
-	if *ver == "" {
-		fatal("Specify version")
-	}
 
 	pa := api.PkgImage{}
 	pa.Name = *name
@@ -120,8 +118,11 @@ func packageList(_ *string) {
 func packageInfo(name *string) {
 	var pk api.PkgImage
 	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
 
-	makeReq(pcols.Sub(*lang).Info(*name), &pk)
+	makeReq(pcols.Sub(*lang).Info(url.PathEscape(*name)), &pk)
 
 	showInfoElement(elementPk{&pk})
 }
