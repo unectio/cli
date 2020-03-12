@@ -91,6 +91,10 @@ func packageAdd(name *string) {
 		fatal("Specify language")
 	}
 
+	if *ver == "" {
+		fatal("Specify version")
+	}
+
 	pa := api.PkgImage{}
 	pa.Name = *name
 	pa.Version = *ver
@@ -134,5 +138,5 @@ func packageDelete(name *string) {
 	goopt.ExtraUsage = ""
 	goopt.Parse(nil)
 
-	makeReq(pcols.Sub(*lang).Delete(*name), nil)
+	makeReq(pcols.Sub(*lang).Delete(url.PathEscape(*name)), nil)
 }
