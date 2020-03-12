@@ -52,6 +52,8 @@ func getTarget(t string) *Target {
 		return &Target{Do: doTrigger}
 	case "am", "auth_method":
 		return &Target{Do: doAuth}
+	case "pkg", "package":
+		return &Target{Do: doPackage}
 	}
 
 	return &Target{Do: func(_ int, _ *string) {
@@ -70,6 +72,7 @@ func listTargets() []string {
 		"sec | secret",
 		"tg | trig | trigger",
 		"am | auth_method",
+		"pkg | package",
 	}
 }
 
