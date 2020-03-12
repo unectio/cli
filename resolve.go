@@ -52,17 +52,16 @@ func resolve(col *client.Collection, val string) api.ObjectId {
 	}
 
 	err = l.MakeRequest(col.Lookup(val), &resp)
-	err2 := l.MakeRequest(col.Info(val), &resp)
-
-	if err != nil && err2 != nil {
-		fatal("Cannot resolve  %s/%s: %s", col, val, err.Error())
+	if err != nil {
+		err = l.MakeRequest(col.Info(val), &resp)
+		if err != nil {
+			fatal("Cannot resolve  %s/%s: %s", col, val, err.Error())
+		} else {
+			return api.ObjectId(val)
+		}
 	}
+	return resp.Id
 
-	if err == nil {
-		return resp.Id
-	}
-
-	return api.ObjectId(val)
 }
 
 func generate(name string, typ string) string {

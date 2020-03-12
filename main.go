@@ -42,18 +42,6 @@ func fatal(msg string, args ...interface{}) {
 	os.Exit(1)
 }
 
-func usage_summary() {
-	fmt.Printf("Usage: %s <command> [<target>] [<object>] [<options>]\n", os.Args[0])
-
-	usage_commands()
-	usage_targets()
-
-	fmt.Printf("Try '%s <command> --help' for command help\n", os.Args[0])
-	fmt.Printf("    '%s <command> <target> --help' for target help\n", os.Args[0])
-	fmt.Printf("    '%s <command> <target> <object> --help' for help with object arguments\n", os.Args[0])
-	fmt.Printf("\nDefault configuration file is %s\n\n", defaultConfig)
-}
-
 func usage_commands_string() string {
 	usage := fmt.Sprintf("Commands (<tgt> means command requires a target):\n")
 	cmds := listCommands()
@@ -61,22 +49,6 @@ func usage_commands_string() string {
 		usage += fmt.Sprintf("\t%s\n", cmd)
 	}
 	return usage
-}
-
-func usage_commands() {
-	fmt.Printf("Available commands (<tgt> means command requires a target):\n")
-	cmds := listCommands()
-	for _, cmd := range cmds {
-		fmt.Printf("\t%s\n", cmd)
-	}
-}
-
-func usage_targets() {
-	fmt.Printf("Recognized targets:\n")
-	tgts := listTargets()
-	for _, tgt := range tgts {
-		fmt.Printf("\t%s\n", tgt)
-	}
 }
 
 func usage_targets_string() string {

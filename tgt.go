@@ -76,7 +76,11 @@ func listTargets() []string {
 func doTargetCmd(cmd int, namep *string, actions map[int]func(namep *string)) {
 	fn, ok := actions[cmd]
 	if !ok {
-		fn = func(_ *string) { usage_targets() }
+		fn = func(_ *string) {
+			goopt.Summary = usage_targets_string()
+			goopt.ExtraUsage = ""
+			fmt.Println(goopt.Usage())
+		}
 	}
 	fn(namep)
 }

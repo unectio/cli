@@ -32,15 +32,15 @@ import (
 )
 
 type element interface {
-	id()	string
-	name()	string
-	short()	string
-	long()	[]*field
+	id() string
+	name() string
+	short() string
+	long() []*field
 }
 
 type field struct {
-	name	string
-	data	interface{}
+	name string
+	data interface{}
 }
 
 func showListElement(le element) {
@@ -51,7 +51,7 @@ func showInfoElement(le element) {
 	fmt.Printf("%-12s: %s\n", "Id", le.id())
 	fmt.Printf("%-12s: %s\n", "Name", le.name())
 	for _, f := range le.long() {
-		fmt.Printf("%-12s: %v\n", f.name, f.data)
+		fmt.Printf("HHH%-12s: %v\n", f.name, f.data)
 	}
 }
 
@@ -61,7 +61,7 @@ func showAddedElement(le element) {
 
 type fmtMap map[string]string
 
-func (m fmtMap)String() string {
+func (m fmtMap) String() string {
 	ret := ""
 	for k, v := range m {
 		ret += k + "=" + v + ":"
@@ -71,7 +71,7 @@ func (m fmtMap)String() string {
 
 type fmtArray []string
 
-func (m fmtArray)String() string {
+func (m fmtArray) String() string {
 	ret := ""
 	for _, x := range m {
 		ret += ", " + x
