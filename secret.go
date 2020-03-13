@@ -75,6 +75,7 @@ func secretAdd(name *string) {
 
 	sec.Name = generate(*name, "sec")
 	sec.Payload = pl
+	sec.Reveal = "keys"
 
 	makeReq(seccol.Add(&sec), &sec)
 
