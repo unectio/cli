@@ -51,7 +51,7 @@ func showInfoElement(le element) {
 	fmt.Printf("%-12s: %s\n", "Id", le.id())
 	fmt.Printf("%-12s: %s\n", "Name", le.name())
 	for _, f := range le.long() {
-		fmt.Printf("HHH%-12s: %v\n", f.name, f.data)
+		fmt.Printf("%-12s: %v\n", f.name, f.data)
 	}
 }
 

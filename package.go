@@ -32,7 +32,7 @@ import (
 	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
-	"net/url"
+	//	"net/url"
 	"os"
 )
 
@@ -52,7 +52,7 @@ func doPackage(cmd int, name *string) {
 type elementPk struct{ *api.PkgImage }
 
 func (pe elementPk) id() string {
-	return pe.PkgImage.Name
+	return string(pe.PkgImage.Id)
 }
 
 func (pe elementPk) name() string {
@@ -69,10 +69,10 @@ func (pe elementPk) short() string {
 
 func (pe elementPk) long() []*field {
 	return []*field{
-		{
-			name: "Name",
-			data: pe.PkgImage.Name,
-		},
+		//		{
+		//			name: "Name",
+		//			data: pe.PkgImage.Name,
+		//		},
 		{
 			name: "Version",
 			data: pe.PkgImage.Version,
@@ -126,7 +126,7 @@ func packageInfo(name *string) {
 	goopt.ExtraUsage = ""
 	goopt.Parse(nil)
 
-	makeReq(pcols.Sub(*lang).Info(url.PathEscape(*name)), &pk)
+	makeReq(pcols.Sub(*lang).Info(*name), &pk)
 
 	showInfoElement(elementPk{&pk})
 }
@@ -138,5 +138,5 @@ func packageDelete(name *string) {
 	goopt.ExtraUsage = ""
 	goopt.Parse(nil)
 
-	makeReq(pcols.Sub(*lang).Delete(url.PathEscape(*name)), nil)
+	makeReq(pcols.Sub(*lang).Delete(*name), nil)
 }
