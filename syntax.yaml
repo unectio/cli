@@ -1,0 +1,61 @@
+---
+function:
+- add: <fn-name>
+- list:
+- delete: <fn-name>
+- set: <fn-name>
+- show: <fn-name>
+  logs:
+  - show: <fn-name>
+  code:
+  - add: <fn-name> <code-name>
+  - list: <fn-name>
+  - delete: <fn-name> <code-name>
+  - set: <fn-name> <code-name>
+  - show: <fn-name> <code-name>
+  - run: <fn-name> <code-name>
+    body:
+    - show: <fn-name> <code-name>
+  trigger:
+  - add: <fn-name> <tg-name>
+  - list: <fn-name>
+  - delete: <fn-name> <tg-name>
+  - set: <fn-name>
+  - show: <fn-name>
+router:
+- add: <rt-name>
+- list:
+- delete: <rt-name>
+- set: <rt-name>
+- show: <rt-name>
+  rule:
+  - add: <rt-name> <rule-ref>
+  - list: <rt-name>
+  - delete: <rt-name> <rule-ref>
+repo:
+- add: <repo-name>
+- list:
+- delete: <repo-name>
+- set: <repo-name>
+- show: <repo-name>
+- pull: <repo-name>
+  file:
+  - list: <repo-name>
+  - show: <repo-name> <file-name>
+secret:
+- add: <sec-name>
+- list:
+- delete: <sec-name>
+- set: <sec-name>
+- show: <sec-name>
+am:
+- add: <am-name>
+- list:
+- delete: <am-name>
+- set: <am-name>
+- show: <am-name>
+package:
+- add: <pkg-name>
+- list:
+- delete: <pkg-name>
+- show: <pkg-name>
