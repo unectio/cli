@@ -40,8 +40,6 @@ var rfcols = apilet.RepoFiles
 func doRepoFile(cmd int, name *string) {
 	fl_actions := map[int]func(name *string){}
 
-	//pk_actions[CmdAdd] = packageAdd
-	//pk_actions[CmdDel] = packageDelete
 	fl_actions[CmdList] = fileList
 	fl_actions[CmdInfo] = fileInfo
 
@@ -87,30 +85,13 @@ func fileList(_ *string) {
 	goopt.ExtraUsage = ""
 	goopt.Parse(nil)
 
-	makeReq(rfcols.Sub(*repo_id).List(), &fs)
+	rpid := resolve(repcol, *repo_id)
+	makeReq(rfcols.Sub(string(rpid)).List(), &fs)
 
 	for _, ff := range fs {
-		//showListElement(elementFl{ff})
 		fmt.Printf("%s\n", ff.Path)
-		//for key, _ := range sec.Payload {
-		//	fmt.Printf("%-20s %-8s %-32s\n", key, "***", "$ref.secret."+sec.Name+"."+key)
-		//}
 	}
 }
-
-/*
-func packageInfo(name *string) {
-	var pk api.PkgImage
-	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
-
-	makeReq(pcols.Sub(*lang).Info(*name), &pk)
-
-	showInfoElement(elementPk{&pk})
-}
-*/
 
 func fileInfo(fname *string) {
 	var rf api.RepoFileImage
@@ -124,7 +105,8 @@ func fileInfo(fname *string) {
 	var only_code bool
 	only_code = *voc
 
-	makeReq(rfcols.Sub(*repo_id).Info(*fname), &rf)
+	rpid := resolve(repcol, *repo_id)
+	makeReq(rfcols.Sub(string(rpid)).Info(*fname), &rf)
 
 	if !only_code {
 		//showInfoElement(elementCode{&rf})
