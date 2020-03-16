@@ -35,85 +35,70 @@ import (
 	"os"
 )
 
-var pcols = apilet.PkgLists
+var rfcols = apilet.RepoFiles
 
-func doPackage(cmd int, name *string) {
-	pk_actions := map[int]func(name *string){}
+func doRepoFile(cmd int, name *string) {
+	fl_actions := map[int]func(name *string){}
 
-	pk_actions[CmdAdd] = packageAdd
-	pk_actions[CmdDel] = packageDelete
-	pk_actions[CmdList] = packageList
-	pk_actions[CmdInfo] = packageInfo
+	//pk_actions[CmdAdd] = packageAdd
+	//pk_actions[CmdDel] = packageDelete
+	fl_actions[CmdList] = fileList
+	fl_actions[CmdInfo] = fileInfo
 
-	doTargetCmd(cmd, name, pk_actions)
+	doTargetCmd(cmd, name, fl_actions)
 }
 
-type elementPk struct{ *api.PkgImage }
+type elementFl struct{ *api.RepoFileImage }
 
-func (pe elementPk) id() string {
-	return string(pe.PkgImage.Id)
+func (fe elementFl) id() string {
+	return string(fe.RepoFileImage.Name)
 }
 
-func (pe elementPk) name() string {
-	return pe.PkgImage.Name
+func (fe elementFl) name() string {
+	return fe.RepoFileImage.Name
 }
 
-func (pe elementPk) version() string {
-	return pe.PkgImage.Version
+func (fe elementFl) version() string {
+	return fe.RepoFileImage.Name
 }
 
-func (pe elementPk) short() string {
-	return ""
+func (fe elementFl) short() string {
+	return fe.RepoFileImage.Path
 }
 
-func (pe elementPk) long() []*field {
+func (fe elementFl) long() []*field {
 	return []*field{
 		{
-			name: "Version",
-			data: pe.PkgImage.Version,
+			name: "Path",
+			data: fe.RepoFileImage.Path,
+		},
+		{
+			name: "Type",
+			data: fe.RepoFileImage.Type,
 		},
 	}
 }
 
-func packageAdd(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
-	var ver = goopt.String([]string{"-v", "--version"}, "", "version of package")
-	goopt.Parse(nil)
-
-	if *lang == "" {
-		fatal("Specify language")
-	}
-
-	if *ver == "" {
-		fatal("Specify version")
-	}
-
-	pa := api.PkgImage{}
-	pa.Name = *name
-	pa.Version = *ver
-
-	makeReq(pcols.Sub(*lang).Add(&pa), &pa)
-
-	showAddedElement(elementPk{&pa})
-}
-
-func packageList(_ *string) {
-	var pks []*api.PkgImage
-	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
+func fileList(_ *string) {
+	var fs []*api.RepoFileImage
+	var repo_id = goopt.String([]string{"-r", "--repository"}, "", "repository")
 
 	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
 	goopt.ExtraUsage = ""
 	goopt.Parse(nil)
 
-	makeReq(pcols.Sub(*lang).List(), &pks)
+	makeReq(rfcols.Sub(*repo_id).List(), &fs)
 
-	for _, pk := range pks {
-		showListElement(elementPk{pk})
+	for _, ff := range fs {
+		//showListElement(elementFl{ff})
+		fmt.Printf("%s\n", ff.Path)
+		//for key, _ := range sec.Payload {
+		//	fmt.Printf("%-20s %-8s %-32s\n", key, "***", "$ref.secret."+sec.Name+"."+key)
+		//}
 	}
 }
 
+/*
 func packageInfo(name *string) {
 	var pk api.PkgImage
 	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
@@ -125,13 +110,26 @@ func packageInfo(name *string) {
 
 	showInfoElement(elementPk{&pk})
 }
+*/
 
-func packageDelete(name *string) {
-	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
-
+func fileInfo(fname *string) {
+	var rf api.RepoFileImage
 	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
 	goopt.ExtraUsage = ""
+	var voc = goopt.Flag([]string{"-C", "--code"}, []string{}, "Show code only", "")
+	var repo_id = goopt.String([]string{"-r", "--repository"}, "", "repository")
+
 	goopt.Parse(nil)
 
-	makeReq(pcols.Sub(*lang).Delete(*name), nil)
+	var only_code bool
+	only_code = *voc
+
+	makeReq(rfcols.Sub(*repo_id).Info(*fname), &rf)
+
+	if !only_code {
+		//showInfoElement(elementCode{&rf})
+	} else {
+		//fmt.Print(string(rf.Source.Text))
+		fmt.Printf("\n")
+	}
 }

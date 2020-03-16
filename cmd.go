@@ -62,6 +62,8 @@ func getCommand(c string) *Command {
 		return &Command{Do: functionRun}
 	case "load":
 		return &Command{Do: loadSpec}
+	case "pull":
+		return &Command{Do: repoPull}
 	}
 
 	return &Command{Do: func() {
@@ -79,6 +81,7 @@ func listCommands() []string {
 		"upd  | update <tgt>",
 		"info | get    <tgt>",
 		"run          (function)",
+		"pull         (repository)",
 		"load         (spec file)",
 	}
 }

@@ -54,6 +54,8 @@ func getTarget(t string) *Target {
 		return &Target{Do: doAuth}
 	case "pkg", "package":
 		return &Target{Do: doPackage}
+	case "file", "fl":
+		return &Target{Do: doRepoFile}
 	}
 
 	return &Target{Do: func(_ int, _ *string) {
@@ -69,6 +71,7 @@ func listTargets() []string {
 		"code",
 		"rt | router",
 		"repo | repository",
+		"file | fl",
 		"sec | secret",
 		"tg | trig | trigger",
 		"am | auth_method",

@@ -32,6 +32,7 @@ import (
 	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
+	rq "github.com/unectio/util/request"
 	"os"
 )
 
@@ -115,4 +116,18 @@ func repoInfo(name *string) {
 	fmt.Printf("Type:           %s\n", rp.Type)
 	fmt.Printf("URL:            %s\n", rp.URL)
 	fmt.Printf("Head:           %s\n", rp.Head)
+}
+
+func repoPull() {
+	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.ExtraUsage = ""
+	goopt.Parse(nil)
+
+	if len(os.Args) <= 2 {
+		fatal("Specify repository")
+	}
+
+	rpid := resolve(repcol, os.Args[2])
+
+	makeReq(rq.Req("", "repositories/"+string(rpid)+"/pull"), nil)
 }
