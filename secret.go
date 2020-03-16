@@ -121,9 +121,9 @@ func secretInfo(name *string) {
 	fmt.Printf("Name:           %s\n", sec.Name)
 	fmt.Printf("Tags:           %s\n", strings.Join(sec.Tags, ","))
 	if sec.Payload != nil {
-		fmt.Printf("%-32s %-8s %-32s\n", "Payload/Key", "Value", "Reference")
+		fmt.Printf("------------------\nData:\n%-20s %-8s %-32s\n", "Key", "Value", "Reference")
 		for key, _ := range sec.Payload {
-			fmt.Printf("%-32s %-8s %-32s\n", key, "***", "$ref.secret."+sec.Name+"."+key)
+			fmt.Printf("%-20s %-8s %-32s\n", key, "***", "$ref.secret."+sec.Name+"."+key)
 		}
 	}
 }
