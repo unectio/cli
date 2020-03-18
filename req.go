@@ -72,7 +72,11 @@ func (l *Login)MakeRequest(rq *rq.Request, res interface{}) error {
 
 	resp := rq.Do()
 	if res != nil {
-		resp = resp.B(res)
+		if resb, ok := res.(*[]byte); ok {
+			resp, *resb = resp.Raw()
+		} else {
+			resp = resp.B(res)
+		}
 	}
 
 	if *debug {

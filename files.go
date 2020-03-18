@@ -94,24 +94,15 @@ func fileList(_ *string) {
 }
 
 func fileInfo(fname *string) {
-	var rf api.RepoFileImage
 	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
 	goopt.ExtraUsage = ""
-	var voc = goopt.Flag([]string{"-C", "--code"}, []string{}, "Show code only", "")
 	var repo_id = goopt.String([]string{"-r", "--repository"}, "", "repository")
 
 	goopt.Parse(nil)
 
-	var only_code bool
-	only_code = *voc
-
 	rpid := resolve(repcol, *repo_id)
-	makeReq(rfcols.Sub(string(rpid)).Info(*fname), &rf)
 
-	if !only_code {
-		//showInfoElement(elementCode{&rf})
-	} else {
-		//fmt.Print(string(rf.Source.Text))
-		fmt.Printf("\n")
-	}
+	var contents []byte
+	makeReq(rfcols.Sub(string(rpid)).Info(*fname), &contents)
+	fmt.Printf("%s\n", string(contents))
 }
