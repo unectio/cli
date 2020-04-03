@@ -101,7 +101,7 @@ func triggerAdd(name *string) {
 	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
 	goopt.ExtraUsage = ""
 	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	var vsrc = goopt.String([]string{"--tsource"}, "", "trigger source")
+	var vsrc = goopt.String([]string{"-s", "--tsource"}, "", "trigger source")
 	var vurl = goopt.String([]string{"-u", "--url"}, "", "trigger URL")
 	var va = goopt.String([]string{"-a", "--auth"}, "", "URL trigger auth name/id")
 	var vct = goopt.String([]string{"--crontab"}, "", "Cron trigger tab")
