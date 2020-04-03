@@ -123,7 +123,7 @@ func secretInfo(name *string) {
 	if sec.Payload != nil {
 		fmt.Printf("------------------\nData:\n%-20s %-8s %-32s\n", "Key", "Value", "Reference")
 		for key, _ := range sec.Payload {
-			fmt.Printf("%-20s %-8s %-32s\n", key, "***", "$ref.secret."+sec.Name+"."+key)
+			fmt.Printf("%-20s %-8s %-32s\n", key, "***", "$ref:secret."+sec.Name+"."+key)
 		}
 	}
 }
