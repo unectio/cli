@@ -166,7 +166,7 @@ func functionDelete(name *string) {
 
 func functionRun() {
 
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
+	goopt.Summary = fmt.Sprintf("Usage: %s %s:\n", os.Args[0], os.Args[1])
 	goopt.ExtraUsage = ""
 	if len(os.Args) <= 2 {
 		fatal("Specify function/code to run")
