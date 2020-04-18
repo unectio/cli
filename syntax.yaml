@@ -5,7 +5,9 @@ function:
 - delete: <fn-name>
 - set: <fn-name>
 - show: <fn-name>
-  logs (Done as flags in show, also stats is missing):
+  logs: 
+  - show: <fn-name>
+  stats: 
   - show: <fn-name>
   code:
   - add: <fn-name> <code-name>
@@ -20,7 +22,7 @@ function:
   - add: <fn-name> <tg-name>
   - list: <fn-name>
   - delete: <fn-name> <tg-name>
-  - set: <fn-name> (not implemented)
+  - set: <fn-name> (not supported)
   - show: <fn-name>
 router:
 - add: <rt-name>
@@ -28,10 +30,10 @@ router:
 - delete: <rt-name>
 - set: <rt-name>
 - show: <rt-name>
-  rule: (not done)
-  - add: <rt-name> <rule-ref>
-  - list: <rt-name>
-  - delete: <rt-name> <rule-ref>
+  rule: (implemented by --muxonly flag in show)
+  - add: <rt-name> <rule-ref> (implemented via flags in router add)
+  - list: <rt-name> (implemented via flags in router add)
+  - delete: <rt-name> <rule-ref> (implemented via flags in router add)
 repo:
 - add: <repo-name>
 - list:

@@ -51,7 +51,6 @@ func main() {
 		Long: name + ` is a CLI application to control Unectio FaaS project connecting to the API endpoint.
 
 For online documentation, refer to https://docs.unectio.com`,
-		Args: cobra.NoArgs,
 	}
 
 	/* Function command and subcomands are defined here */
@@ -60,7 +59,6 @@ For online documentation, refer to https://docs.unectio.com`,
 		Use:     "function",
 		Aliases: []string{"fn"},
 		Short:   "Manage functions and objects inside the functions (triggers, code)",
-		Args:    cobra.NoArgs,
 	}
 
 	var function_enviroment string
@@ -91,7 +89,6 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		},
 	}
 
-	var function_information, function_log_duration string
 	var subFunctionShow = &cobra.Command{
 		Use:     "show [function name]",
 		Short:   "Show function properties",
@@ -99,13 +96,11 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		Args:    cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			fn := args[0]
-			functionInfo(&fn, &function_information, &function_log_duration)
+			info := ""
+			duration := ""
+			functionInfo(&fn, &info, &duration)
 		},
 	}
-	subFunctionShow.Flags().StringVarP(&function_information, "information",
-		"i", "", "what to show (logs, stats)")
-	subFunctionShow.Flags().StringVarP(&function_enviroment, "duration",
-		"", "", "logs duration to show, since now")
 
 	var subFunctionDelete = &cobra.Command{
 		Use:     "delete [function name]",
@@ -131,6 +126,49 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	subFunctionSet.Flags().StringVarP(&function_enviroment, "environment", "e", "",
 		"KEY1=VALUE1,...  set function environment variables (comma-separated for multiple)")
 
+	/* Function logs command and subcomands are defined here */
+
+	var subFunctionLogs = &cobra.Command{
+		Use:   "logs [command]",
+		Short: "Show function logs",
+		Args:  cobra.NoArgs,
+	}
+
+	var function_log_duration string
+	var subFunctionLogsShow = &cobra.Command{
+		Use:   "Show [function name]",
+		Short: "Show function logs",
+		Args:  cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			fn := args[0]
+			info := "logs"
+			functionInfo(&fn, &info, &function_log_duration)
+		},
+	}
+	subFunctionShow.Flags().StringVarP(&function_log_duration, "duration",
+		"", "", "logs duration f.e. 100h will show logs for 100 hours back")
+
+	/* Function stats command and subcomands are defined here */
+
+	var subFunctionStats = &cobra.Command{
+		Use:     "stats [command]",
+		Short:   "Show function statistics",
+		Aliases: []string{"statistics"},
+		Args:    cobra.NoArgs,
+	}
+
+	var subFunctionStatsShow = &cobra.Command{
+		Use:   "stats [function name]",
+		Short: "Show function statistics",
+		Args:  cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			fn := args[0]
+			info := "stats"
+			duration := ""
+			functionInfo(&fn, &info, &duration)
+		},
+	}
+
 	/* Function code command and subcomands are defined here */
 
 	var subFunctionCode = &cobra.Command{
@@ -154,8 +192,10 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	}
 	subFunctionCodeAdd.Flags().StringVarP(&code_lang,
 		"language", "l", "", "code language")
+	subFunctionCodeAdd.MarkFlagRequired("language")
 	subFunctionCodeAdd.Flags().StringVarP(&code_src, "source", "s", "",
 		"sources (file name or url or repo:<repo name>:path)")
+	subFunctionCodeAdd.MarkFlagRequired("source")
 	subFunctionCodeAdd.Flags().IntVarP(&code_weight, "weight", "w", 0,
 		"code weight")
 
@@ -195,10 +235,10 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	}
 	subFunctionCodeSet.Flags().StringVarP(&code_src, "source", "s", "",
 		"sources (file name or url or repo:<repo name>:path)")
+	subFunctionCodeSet.MarkFlagRequired("source")
 	subFunctionCodeSet.Flags().IntVarP(&code_weight, "weight", "w", 0,
 		"code weight")
 
-	var just_code bool
 	var subFunctionCodeShow = &cobra.Command{
 		Use:     "show [function name] [code name]",
 		Short:   "Show code properties",
@@ -207,11 +247,10 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fn := args[0]
 			cn := args[1]
+			just_code := false
 			codeInfo(&fn, &cn, &just_code)
 		},
 	}
-	subFunctionCodeShow.Flags().BoolVarP(&just_code, "code", "", false,
-		"show code source only")
 
 	var request string
 	var subFunctionCodeRun = &cobra.Command{
@@ -227,6 +266,27 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	}
 	subFunctionCodeRun.Flags().StringVarP(&request, "request", "r", "",
 		"request (JSON string)")
+
+	/* Function code body command and subcomands are defined here */
+
+	var subFunctionCodeBody = &cobra.Command{
+		Use:     "body [command]",
+		Short:   "Manage function code body",
+		Aliases: []string{"source"},
+		Args:    cobra.NoArgs,
+	}
+
+	var subFunctionCodeBodyShow = &cobra.Command{
+		Use:   "show [function name] [code name]",
+		Short: "Show function code body",
+		Args:  cobra.MinimumNArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			fn := args[0]
+			cn := args[1]
+			just_code := true
+			codeInfo(&fn, &cn, &just_code)
+		},
+	}
 
 	/* Function trigger command and subcomands are defined here */
 
@@ -640,11 +700,11 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 
 	/* Global flags definition */
 
-	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false,
+	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "", false,
 		"verbose output (print raw REST API data)")
-	rootCmd.PersistentFlags().BoolVarP(&DryRun, "dry", "d", false,
+	rootCmd.PersistentFlags().BoolVarP(&DryRun, "dry", "", false,
 		"perform all client-side validation but do not perform any server requests")
-	rootCmd.PersistentFlags().StringVarP(&Cfg, "config", "c", defaultConfig,
+	rootCmd.PersistentFlags().StringVarP(&Cfg, "config", "", defaultConfig,
 		"path to the configuration file")
 
 	/* CLI commands initialisation */
@@ -659,10 +719,16 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	subFunction.AddCommand(subFunctionAdd)
 	subFunction.AddCommand(subFunctionList)
 	subFunction.AddCommand(subFunctionShow)
+	subFunction.AddCommand(subFunctionLogs)
+	subFunction.AddCommand(subFunctionStats)
 	subFunction.AddCommand(subFunctionDelete)
 	subFunction.AddCommand(subFunctionSet)
 	subFunction.AddCommand(subFunctionCode)
 	subFunction.AddCommand(subFunctionTrigger)
+
+	subFunctionLogs.AddCommand(subFunctionLogsShow)
+
+	subFunctionStats.AddCommand(subFunctionStatsShow)
 
 	subFunctionCode.AddCommand(subFunctionCodeAdd)
 	subFunctionCode.AddCommand(subFunctionCodeList)
@@ -670,6 +736,10 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	subFunctionCode.AddCommand(subFunctionCodeSet)
 	subFunctionCode.AddCommand(subFunctionCodeShow)
 	subFunctionCode.AddCommand(subFunctionCodeRun)
+
+	subFunctionCode.AddCommand(subFunctionCodeBody)
+
+	subFunctionCodeBody.AddCommand(subFunctionCodeBodyShow)
 
 	subFunctionTrigger.AddCommand(subFunctionTriggerAdd)
 	subFunctionTrigger.AddCommand(subFunctionTriggerList)
