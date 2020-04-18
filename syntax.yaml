@@ -20,7 +20,7 @@ function:
   - add: <fn-name> <tg-name>
   - list: <fn-name>
   - delete: <fn-name> <tg-name>
-  - set: <fn-name>
+  - set: <fn-name> (not implemented)
   - show: <fn-name>
 router:
 - add: <rt-name>
@@ -28,7 +28,7 @@ router:
 - delete: <rt-name>
 - set: <rt-name>
 - show: <rt-name>
-  rule:
+  rule: (not done)
   - add: <rt-name> <rule-ref>
   - list: <rt-name>
   - delete: <rt-name> <rule-ref>
@@ -36,7 +36,7 @@ repo:
 - add: <repo-name>
 - list:
 - delete: <repo-name>
-- set: <repo-name>
+- set: <repo-name> (not supported)
 - show: <repo-name>
 - pull: <repo-name>
   file:
@@ -46,13 +46,13 @@ secret:
 - add: <sec-name>
 - list:
 - delete: <sec-name>
-- set: <sec-name>
+- set: <sec-name> (not supported)
 - show: <sec-name>
 am:
 - add: <am-name>
 - list:
 - delete: <am-name>
-- set: <am-name>
+- set: <am-name> (not supported)
 - show: <am-name>
 package:
 - add: <pkg-name> <lang> <version>
