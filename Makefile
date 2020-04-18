@@ -1,12 +1,12 @@
-all: lets
+all: uctl
 
 .PHONY: all
 
-lets: .FORCE
-	GOPATH=$(GOPATH):$(shell pwd) go build -o lets
+uctl: .FORCE
+	GOPATH=$(GOPATH):$(shell pwd) go build -o uctl
 
-lets-full: .FORCE
-	GOPATH=$(GOPATH):$(shell pwd) go build -tags batcher -o lets
+uctl-full: .FORCE
+	GOPATH=$(GOPATH):$(shell pwd) go build -tags batcher -o uctl
 
 deps:
 	./scripts/prep-devel.sh

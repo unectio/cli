@@ -29,32 +29,14 @@ package main
 
 import (
 	"fmt"
-	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	rq "github.com/unectio/util/request"
-	"os"
 )
 
 var repcol = apilet.Repos
 
-func doRepo(cmd int, name *string) {
-	rep_actions := map[int]func(*string){}
-
-	rep_actions[CmdAdd] = repoAdd
-	rep_actions[CmdList] = repoList
-	rep_actions[CmdInfo] = repoInfo
-	rep_actions[CmdDel] = repoDel
-
-	doTargetCmd(cmd, name, rep_actions)
-}
-
-func repoAdd(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	var url = goopt.String([]string{"-u", "--url"}, "", "repo URL (git)")
-	goopt.Parse(nil)
-
+func repoAdd(name *string, url *string) {
 	if *url == "" {
 		fatal("No URL specified, mind using -u or --url option")
 	}
@@ -70,10 +52,6 @@ func repoAdd(name *string) {
 }
 
 func repoDel(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
-
 	rpid := resolve(repcol, *name)
 
 	makeReq(repcol.Delete(string(rpid)), nil)
@@ -81,12 +59,8 @@ func repoDel(name *string) {
 	fmt.Printf("Deleted repo (id %s)\n", rpid)
 }
 
-func repoList(_ *string) {
+func repoList() {
 	var rps []*api.RepoImage
-
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	makeReq(repcol.List(), &rps)
 
@@ -101,10 +75,6 @@ func repoList(_ *string) {
 }
 
 func repoInfo(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
-
 	rpid := resolve(repcol, *name)
 
 	var rp api.RepoImage
@@ -118,16 +88,8 @@ func repoInfo(name *string) {
 	fmt.Printf("Head:           %s\n", rp.Head)
 }
 
-func repoPull() {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
-
-	if len(os.Args) <= 2 {
-		fatal("Specify repository")
-	}
-
-	rpid := resolve(repcol, os.Args[2])
+func repoPull(name *string) {
+	rpid := resolve(repcol, *name)
 
 	makeReq(rq.Req("", "repositories/"+string(rpid)+"/pull"), nil)
 }

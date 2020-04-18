@@ -30,27 +30,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	rq "github.com/unectio/util/request"
-	"os"
 	"strings"
 )
 
 var fcol = apilet.Functions
-
-func doFunction(cmd int, name *string) {
-	fn_actions := map[int]func(name *string){}
-
-	fn_actions[CmdAdd] = functionAdd
-	fn_actions[CmdDel] = functionDelete
-	fn_actions[CmdList] = functionList
-	fn_actions[CmdUpdate] = functionUpdate
-	fn_actions[CmdInfo] = functionInfo
-
-	doTargetCmd(cmd, name, fn_actions)
-}
 
 type elementFn struct{ *api.FunctionImage }
 
@@ -83,11 +69,7 @@ func (fe elementFn) long() []*field {
 	}
 }
 
-func functionAdd(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var env = goopt.String([]string{"-e", "--environment"}, "", "environment (key=val;...)")
-	goopt.Parse(nil)
+func functionAdd(name *string, env *string) {
 
 	fa := api.FunctionImage{}
 	fa.Name = generate(*name, "fn")
@@ -97,20 +79,15 @@ func functionAdd(name *string) {
 	}
 
 	makeReq(fcol.Add(&fa), &fa)
-
 	showAddedElement(elementFn{&fa})
 }
 
 func parseEnv(envs string) []string {
-	return strings.Split(envs, ";")
+	return strings.Split(envs, ",")
 }
 
-func functionList(_ *string) {
+func functionList() {
 	var fns []*api.FunctionImage
-
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	makeReq(fcol.List(), &fns)
 
@@ -119,13 +96,7 @@ func functionList(_ *string) {
 	}
 }
 
-func functionInfo(name *string) {
-
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var inf = goopt.String([]string{"-i", "--information"}, "", "what to show (logs, stats) ")
-	var lfor = goopt.String([]string{"--duration"}, "", "for what period logs to show (duration since now)")
-	goopt.Parse(nil)
+func functionInfo(name *string, inf *string, lfor *string) {
 
 	switch *inf {
 	case "stats":
@@ -148,9 +119,6 @@ func functionCommonInfo(name *string) {
 
 func functionDelete(name *string) {
 
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 	fnid := resolve(fcol, *name)
 
 	var cis []*api.CodeImage
@@ -164,43 +132,19 @@ func functionDelete(name *string) {
 	makeReq(fcol.Delete(string(fnid)), nil)
 }
 
-func functionRun() {
-
-	goopt.Summary = fmt.Sprintf("Usage: %s %s:\n", os.Args[0], os.Args[1])
-	goopt.ExtraUsage = ""
-	if len(os.Args) <= 2 {
-		fatal("Specify function/code to run")
-	}
-
-	var name, code, req string
-	var vname = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	var vreq = goopt.String([]string{"-r", "--request"}, "", "request (JSON string)")
-	goopt.Parse(nil)
-
-	if strings.Contains(os.Args[2], "/") {
-		x := strings.SplitN(os.Args[2], "/", 2)
-		if len(x) != 2 {
-			fatal("Specify function/code to run separated by \"/\" ")
-		}
-		name = x[0]
-		code = x[1]
-	} else {
-		code = os.Args[2]
-		name = *vname
-	}
-	req = *vreq
+func functionRun(fn *string, cn *string, rn *string) {
 
 	var rreq api.FuncRun
 	var res api.RunResponse
 
-	err := json.Unmarshal([]byte(req), &rreq.Req)
+	err := json.Unmarshal([]byte(*rn), &rreq.Req)
 	if err != nil {
 		fatal("Bad req param: " + err.Error())
 	}
 
-	fnid := resolve(fcol, name)
+	fnid := resolve(fcol, *fn)
 	xcol := ccol.Sub(string(fnid))
-	cver := resolve(xcol, code)
+	cver := resolve(xcol, *cn)
 
 	makeReq(rq.Req("", "functions/"+string(fnid)+"/code/"+string(cver)+"/run").B(&rreq), &res)
 
@@ -216,11 +160,7 @@ func functionRun() {
 	}
 }
 
-func functionUpdate(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var env = goopt.String([]string{"-e", "--environment"}, "", "environment (key=val;...)")
-	goopt.Parse(nil)
+func functionUpdate(name *string, env *string) {
 
 	fnid := resolve(fcol, *name)
 

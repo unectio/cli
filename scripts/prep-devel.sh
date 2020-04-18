@@ -9,7 +9,7 @@ fi
 set -x
 set -e
 
-go get github.com/droundy/goopt
+go getgithub.com/spf13/cobra
 go get github.com/dgrijalva/jwt-go
 go get gopkg.in/yaml.v2
 go get go.uber.org/zap

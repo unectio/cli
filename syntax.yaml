@@ -5,7 +5,7 @@ function:
 - delete: <fn-name>
 - set: <fn-name>
 - show: <fn-name>
-  logs:
+  logs (Done as flags in show, also stats is missing):
   - show: <fn-name>
   code:
   - add: <fn-name> <code-name>
@@ -55,7 +55,7 @@ am:
 - set: <am-name>
 - show: <am-name>
 package:
-- add: <pkg-name>
-- list:
-- delete: <pkg-name>
-- show: <pkg-name>
+- add: <pkg-name> <lang> <version>
+- list: <lang>
+- delete: <pkg-name> <lang>
+- show: <pkg-name> <lamg>

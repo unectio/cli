@@ -29,29 +29,13 @@ package main
 
 import (
 	"fmt"
-	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
-	"os"
 )
 
 var authcol = apilet.AuthMethods
 
-func doAuth(cmd int, name *string) {
-	a_actions := map[int]func(namep *string){}
-	a_actions[CmdAdd] = authAdd
-	a_actions[CmdList] = authList
-	a_actions[CmdInfo] = authInfo
-	a_actions[CmdDel] = authDel
-
-	doTargetCmd(cmd, name, a_actions)
-}
-
-func authAdd(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var key = goopt.String([]string{"-k", "--key"}, "", "jwt key (base64-encoded or auto)")
-	goopt.Parse(nil)
+func authAdd(name *string, key *string) {
 
 	ai := api.AuthMethodImage{}
 	ai.Name = generate(*name, "am")
@@ -66,20 +50,14 @@ func authAdd(name *string) {
 }
 
 func authDel(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	aid := resolve(authcol, *name)
 
 	makeReq(authcol.Delete(string(aid)), nil)
 }
 
-func authList(_ *string) {
+func authList() {
 	var as []*api.AuthMethodImage
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	makeReq(authcol.List(), &as)
 
@@ -89,9 +67,6 @@ func authList(_ *string) {
 }
 
 func authInfo(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	aid := resolve(authcol, *name)
 

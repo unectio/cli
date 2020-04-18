@@ -29,22 +29,11 @@ package main
 
 import (
 	"fmt"
-	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
-	"os"
 )
 
 var rfcols = apilet.RepoFiles
-
-func doRepoFile(cmd int, name *string) {
-	fl_actions := map[int]func(name *string){}
-
-	fl_actions[CmdList] = fileList
-	fl_actions[CmdInfo] = fileInfo
-
-	doTargetCmd(cmd, name, fl_actions)
-}
 
 type elementFl struct{ *api.RepoFileImage }
 
@@ -77,13 +66,8 @@ func (fe elementFl) long() []*field {
 	}
 }
 
-func fileList(_ *string) {
+func fileList(repo_id *string) {
 	var fs []*api.RepoFileImage
-	var repo_id = goopt.String([]string{"-r", "--repository"}, "", "repository")
-
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	rpid := resolve(repcol, *repo_id)
 	makeReq(rfcols.Sub(string(rpid)).List(), &fs)
@@ -93,13 +77,7 @@ func fileList(_ *string) {
 	}
 }
 
-func fileInfo(fname *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var repo_id = goopt.String([]string{"-r", "--repository"}, "", "repository")
-
-	goopt.Parse(nil)
-
+func fileInfo(repo_id *string, fname *string) {
 	rpid := resolve(repcol, *repo_id)
 
 	var contents []byte

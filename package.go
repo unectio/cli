@@ -28,25 +28,11 @@
 package main
 
 import (
-	"fmt"
-	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
-	"os"
 )
 
 var pcols = apilet.PkgLists
-
-func doPackage(cmd int, name *string) {
-	pk_actions := map[int]func(name *string){}
-
-	pk_actions[CmdAdd] = packageAdd
-	pk_actions[CmdDel] = packageDelete
-	pk_actions[CmdList] = packageList
-	pk_actions[CmdInfo] = packageInfo
-
-	doTargetCmd(cmd, name, pk_actions)
-}
 
 type elementPk struct{ *api.PkgImage }
 
@@ -75,21 +61,7 @@ func (pe elementPk) long() []*field {
 	}
 }
 
-func packageAdd(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
-	var ver = goopt.String([]string{"-v", "--version"}, "", "version of package")
-	goopt.Parse(nil)
-
-	if *lang == "" {
-		fatal("Specify language")
-	}
-
-	if *ver == "" {
-		fatal("Specify version")
-	}
-
+func packageAdd(name *string, lang *string, ver *string) {
 	pa := api.PkgImage{}
 	pa.Name = *name
 	pa.Version = *ver
@@ -99,13 +71,8 @@ func packageAdd(name *string) {
 	showAddedElement(elementPk{&pa})
 }
 
-func packageList(_ *string) {
+func packageList(lang *string) {
 	var pks []*api.PkgImage
-	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
-
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	makeReq(pcols.Sub(*lang).List(), &pks)
 
@@ -114,24 +81,15 @@ func packageList(_ *string) {
 	}
 }
 
-func packageInfo(name *string) {
+func packageInfo(name *string, lang *string) {
 	var pk api.PkgImage
-	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	makeReq(pcols.Sub(*lang).Info(*name), &pk)
 
 	showInfoElement(elementPk{&pk})
 }
 
-func packageDelete(name *string) {
-	var lang = goopt.String([]string{"-l", "--language"}, "", "language of package")
-
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
+func packageDel(name *string, lang *string) {
 
 	makeReq(pcols.Sub(*lang).Delete(*name), nil)
 }

@@ -29,25 +29,12 @@ package main
 
 import (
 	"fmt"
-	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
-	"os"
 	"strings"
 )
 
 var tgcol = apilet.FnTriggers
-
-func doTrigger(cmd int, name *string) {
-	tg_actions := map[int]func(*string){}
-
-	tg_actions[CmdAdd] = triggerAdd
-	tg_actions[CmdList] = triggerList
-	tg_actions[CmdInfo] = triggerInfo
-	tg_actions[CmdDel] = triggerDel
-
-	doTargetCmd(cmd, name, tg_actions)
-}
 
 type elementTg struct{ *api.FuncTriggerImage }
 
@@ -96,52 +83,29 @@ func (te elementTg) long() []*field {
 	return nil
 }
 
-func triggerAdd(name *string) {
-	var fn, tname string
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	var vsrc = goopt.String([]string{"-s", "--tsource"}, "", "trigger source")
-	var vurl = goopt.String([]string{"-u", "--url"}, "", "trigger URL")
-	var va = goopt.String([]string{"-a", "--auth"}, "", "URL trigger auth name/id")
-	var vct = goopt.String([]string{"--crontab"}, "", "Cron trigger tab")
-	var vca = goopt.String([]string{"--cronargs"}, "", "Cron trigger args in foo=bar:... format")
-	goopt.Parse(nil)
-
-	if strings.Contains(*name, "/") {
-		x := strings.SplitN(*name, "/", 2)
-		if len(x) != 2 {
-			fatal("Specify function/trigger separated by \"/\" ")
-		}
-		fn = x[0]
-		tname = x[1]
-	} else {
-		tname = *name
-		fn = *vfn
-	}
-
-	fid := resolve(fcol, fn)
+func triggerAdd(fn *string, tn *string, ts *string, tu *string, ta *string, ct *string, ca *string) {
+	fid := resolve(fcol, *fn)
 
 	tra := api.FuncTriggerImage{}
-	tra.Name = generate(tname, "tg")
+	tra.Name = generate(*tn, "tg")
 
-	switch *vsrc {
+	switch *ts {
 	case "url":
 		tra.URL = &api.URLTrigImage{URL: api.AutoValue}
-		if *va != "" {
-			tra.URL.AuthId = resolve(authcol, *va)
+		if *ta != "" {
+			tra.URL.AuthId = resolve(authcol, *ta)
 		}
-		if *vurl != "" {
-			tra.URL.URL = api.URLProjectPfx + *vurl
+		if *tu != "" {
+			tra.URL.URL = api.URLProjectPfx + *tu
 		}
 	case "cron":
 		tra.Cron = &api.CronTrigImage{}
-		if *vct != "" {
-			tra.Cron.Tab = *vct
+		if *ct != "" {
+			tra.Cron.Tab = *ct
 		}
-		if *vca != "" {
+		if *ca != "" {
 			tra.Cron.Args = make(map[string]string)
-			for _, a := range strings.Split(*vca, ":") {
+			for _, a := range strings.Split(*ca, ":") {
 				x := strings.SplitN(a, "=", 2)
 				if len(x) != 2 {
 					fatal("Bad cron arg %s", a)
@@ -157,19 +121,7 @@ func triggerAdd(name *string) {
 }
 
 func triggerList(fcname *string) {
-	var fn string
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	goopt.Parse(nil)
-
-	if fcname != nil && strings.HasPrefix(*fcname, "-") == false {
-		fn = *fcname
-	} else {
-		fn = *vfn
-	}
-
-	fid := resolve(fcol, fn)
+	fid := resolve(fcol, *fcname)
 
 	var tgs []*api.FuncTriggerImage
 
@@ -180,54 +132,18 @@ func triggerList(fcname *string) {
 	}
 }
 
-func triggerDel(name *string) {
-	var fn, tname string
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	goopt.Parse(nil)
-
-	if strings.Contains(*name, "/") {
-		x := strings.SplitN(*name, "/", 2)
-		if len(x) != 2 {
-			fatal("Specify function/trigger separated by \"/\" ")
-		}
-		fn = x[0]
-		tname = x[1]
-	} else {
-		tname = *name
-		fn = *vfn
-	}
-
-	fnid := resolve(fcol, fn)
+func triggerDel(fn *string, tn *string) {
+	fnid := resolve(fcol, *fn)
 	tcol := tgcol.Sub(string(fnid))
-	tgid := resolve(tcol, tname)
+	tgid := resolve(tcol, *tn)
 
 	makeReq(tcol.Delete(string(tgid)), nil)
 }
 
-func triggerInfo(name *string) {
-	var fn, tname string
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	goopt.Parse(nil)
-
-	if strings.Contains(*name, "/") {
-		x := strings.SplitN(*name, "/", 2)
-		if len(x) != 2 {
-			fatal("Specify function/trigger separated by \"/\" ")
-		}
-		fn = x[0]
-		tname = x[1]
-	} else {
-		tname = *name
-		fn = *vfn
-	}
-
-	fnid := resolve(fcol, fn)
+func triggerInfo(fn *string, tn *string) {
+	fnid := resolve(fcol, *fn)
 	tcol := tgcol.Sub(string(fnid))
-	tgid := resolve(tcol, tname)
+	tgid := resolve(tcol, *tn)
 
 	var tg api.FuncTriggerImage
 

@@ -29,27 +29,13 @@ package main
 
 import (
 	"fmt"
-	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	"io/ioutil"
-	"os"
 	"strings"
 )
 
 var ccol = apilet.FnCodes
-
-func doCode(cmd int, name *string) {
-	co_actions := map[int]func(*string){}
-
-	co_actions[CmdAdd] = codeAdd
-	co_actions[CmdList] = codeList
-	co_actions[CmdDel] = codeDel
-	co_actions[CmdUpdate] = codeUpdate
-	co_actions[CmdInfo] = codeInfo
-
-	doTargetCmd(cmd, name, co_actions)
-}
 
 type elementCode struct{ *api.CodeImage }
 
@@ -86,16 +72,9 @@ func (ce elementCode) long() []*field {
 	}
 }
 
-func codeAdd(fcname *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
+func codeAdd(fcname *string, vfn *string, vlang *string, vsrc *string, vw *int) {
 	var fn, cname, lang, src string
 	var w int
-	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	var vlang = goopt.String([]string{"-l", "--language"}, "", "code language")
-	var vsrc = goopt.String([]string{"-s", "--source"}, "", "sources (file name or url or repo:<repo name>:path)")
-	var vw = goopt.Int([]string{"-w", "--weight"}, 0, "code weight")
-	goopt.Parse(nil)
 
 	if strings.Contains(*fcname, "/") {
 		x := strings.SplitN(*fcname, "/", 2)
@@ -123,23 +102,13 @@ func codeAdd(fcname *string) {
 	parseCode(src, ci.Source)
 
 	makeReq(ccol.Sub(string(fid)).Add(&ci), &ci)
-
 	showAddedElement(elementCode{&ci})
 }
 
 func codeList(fcname *string) {
 	var fn string
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	goopt.Parse(nil)
 
-	if fcname != nil && strings.HasPrefix(*fcname, "-") == false {
-		fn = *fcname
-	} else {
-		fn = *vfn
-	}
-
+	fn = *fcname
 	fid := resolve(fcol, fn)
 
 	var cis []*api.CodeImage
@@ -151,96 +120,38 @@ func codeList(fcname *string) {
 	}
 }
 
-func codeDel(ver *string) {
-	var fn, cname string
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	goopt.Parse(nil)
+func codeDel(fn *string, cname *string) {
 
-	if strings.Contains(*ver, "/") {
-		x := strings.SplitN(*ver, "/", 2)
-		if len(x) != 2 {
-			fatal("Specify function/code separated by \"/\" ")
-		}
-		fn = x[0]
-		cname = x[1]
-	} else {
-		cname = *ver
-		fn = *vfn
-	}
-
-	fnid := resolve(fcol, fn)
+	fnid := resolve(fcol, *fn)
 	xcol := ccol.Sub(string(fnid))
-	cver := resolve(xcol, cname)
+	cver := resolve(xcol, *cname)
 
 	makeReq(xcol.Delete(string(cver)), nil)
 }
 
-func codeUpdate(ver *string) {
-	var fn, cname, src string
-	var w int
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	var vsrc = goopt.String([]string{"-s", "--source"}, "", "sources (file name or url or repo:<repo name>:path)")
-	var vw = goopt.Int([]string{"-w", "--weight"}, 0, "code weight")
-	goopt.Parse(nil)
-
-	if strings.Contains(*ver, "/") {
-		x := strings.SplitN(*ver, "/", 2)
-		if len(x) != 2 {
-			fatal("Specify function/code separated by \"/\" ")
-		}
-		fn = x[0]
-		cname = x[1]
-	} else {
-		cname = *ver
-		fn = *vfn
-	}
-
-	src = *vsrc
-	w = *vw
+func codeSet(fn *string, cn *string, vsrc *string, vw *int) {
 
 	var ci api.CodeImage
 
-	ci.Weight = w
+	ci.Weight = *vw
 	ci.Source = &api.SourceImage{}
-	parseCode(src, ci.Source)
+	parseCode(*vsrc, ci.Source)
 
-	fnid := resolve(fcol, fn)
+	fnid := resolve(fcol, *fn)
 	xcol := ccol.Sub(string(fnid))
-	cver := resolve(xcol, cname)
+	cver := resolve(xcol, *cn)
 
 	makeReq(xcol.Upd(string(cver), &ci), nil)
 }
 
-func codeInfo(ver *string) {
-	var fn, cname string
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var vfn = goopt.String([]string{"-f", "--function"}, "", "function name/id")
-	var voc = goopt.Flag([]string{"-C", "--code"}, []string{}, "Show code only", "")
-	goopt.Parse(nil)
-
-	if strings.Contains(*ver, "/") {
-		x := strings.SplitN(*ver, "/", 2)
-		if len(x) != 2 {
-			fatal("Specify function/code separated by \"/\" ")
-		}
-		fn = x[0]
-		cname = x[1]
-	} else {
-		cname = *ver
-		fn = *vfn
-	}
+func codeInfo(fn *string, cn *string, just_code *bool) {
 
 	var only_code bool
-	only_code = *voc
+	only_code = *just_code
 
-	fnid := resolve(fcol, fn)
+	fnid := resolve(fcol, *fn)
 	xcol := ccol.Sub(string(fnid))
-	cver := resolve(xcol, cname)
+	cver := resolve(xcol, *cn)
 
 	var ci api.CodeImage
 

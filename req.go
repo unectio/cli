@@ -28,12 +28,12 @@
 package main
 
 import (
-	"log"
-	"reflect"
+	"encoding/json"
 	"github.com/unectio/api"
 	"github.com/unectio/util"
-	"encoding/json"
 	"github.com/unectio/util/request"
+	"log"
+	"reflect"
 )
 
 func makeReq(rq *rq.Request, res interface{}) {
@@ -48,12 +48,12 @@ func makeReq(rq *rq.Request, res interface{}) {
 	}
 }
 
-func (l *Login)MakeRequest(rq *rq.Request, res interface{}) error {
+func (l *Login) MakeRequest(rq *rq.Request, res interface{}) error {
 	rq.Host = l.address
 	rq.Path = "/v1/" + rq.Path
 
-	rq = rq.H(api.AuthTokHeader, util.BearerPrefix + l.token)
-	if *debug {
+	rq = rq.H(api.AuthTokHeader, util.BearerPrefix+l.token)
+	if Verbose {
 		log.Printf("-> %s\n", rq.String())
 		log.Printf("-> %s\n", rq.Hdrs())
 		if rq.Body != nil {
@@ -62,7 +62,7 @@ func (l *Login)MakeRequest(rq *rq.Request, res interface{}) error {
 		}
 	}
 
-	if *dryrun {
+	if DryRun {
 		if rq.Method == "POST" {
 			trySetSomeId(res)
 		}
@@ -79,7 +79,7 @@ func (l *Login)MakeRequest(rq *rq.Request, res interface{}) error {
 		}
 	}
 
-	if *debug {
+	if Verbose {
 		log.Printf("<- %s\n", resp.String())
 		log.Printf("<- %s\n", resp.Hdrs())
 		if res != nil {

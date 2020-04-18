@@ -29,30 +29,17 @@ package main
 
 import (
 	"fmt"
-	goopt "github.com/droundy/goopt"
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
-	"os"
 	"strings"
 )
 
 var seccol = apilet.Secrets
 
-func doSecret(cmd int, name *string) {
-	sec_actions := map[int]func(*string){}
-
-	sec_actions[CmdAdd] = secretAdd
-	sec_actions[CmdList] = secretList
-	sec_actions[CmdInfo] = secretInfo
-	sec_actions[CmdDel] = secretDelete
-
-	doTargetCmd(cmd, name, sec_actions)
-}
-
 func parseKV(kv string) map[string]string {
 	ret := make(map[string]string)
 
-	for _, x := range strings.Split(kv, ";") {
+	for _, x := range strings.Split(kv, ",") {
 		if x == "" {
 			continue
 		}
@@ -63,11 +50,7 @@ func parseKV(kv string) map[string]string {
 	return ret
 }
 
-func secretAdd(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	var kv = goopt.String([]string{"-k", "--key"}, "", "table (k=v;...)")
-	goopt.Parse(nil)
+func secretAdd(name *string, kv *string) {
 
 	pl := parseKV(*kv)
 
@@ -82,22 +65,15 @@ func secretAdd(name *string) {
 	fmt.Printf("Added secret (id %s)\n", sec.Id)
 }
 
-func secretDelete(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
+func secretDel(name *string) {
 
 	secid := resolve(seccol, *name)
 
 	makeReq(seccol.Delete(string(secid)), nil)
 }
 
-func secretList(_ *string) {
+func secretList() {
 	var secs []*api.SecretImage
-
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	makeReq(seccol.List(), &secs)
 
@@ -107,9 +83,6 @@ func secretList(_ *string) {
 }
 
 func secretInfo(name *string) {
-	goopt.Summary = fmt.Sprintf("Usage: %s %s %s %s:\n", os.Args[0], os.Args[1], os.Args[2], os.Args[3])
-	goopt.ExtraUsage = ""
-	goopt.Parse(nil)
 
 	secid := resolve(seccol, *name)
 
