@@ -49,9 +49,12 @@ type Login struct {
 }
 
 func config() string {
-	cfg := os.Getenv("LETS_CONFIG")
+	cfg := Cfg
 	if cfg == "" {
-		cfg = defaultConfig
+		cfg = os.Getenv(defaultCfgEnv)
+		if cfg == "" {
+			cfg = defaultConfig
+		}
 	}
 
 	return cfg

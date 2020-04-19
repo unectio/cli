@@ -37,6 +37,7 @@ import (
 const (
 	name          string = "uctl"
 	defaultConfig string = "/etc/" + name + ".config"
+	defaultCfgEnv string = "UCTL_CONFIG"
 )
 
 func fatal(msg string, args ...interface{}) {
@@ -46,7 +47,7 @@ func fatal(msg string, args ...interface{}) {
 
 var Verbose bool
 var DryRun bool
-var Cfg string
+var Cfg string = ""
 
 func main() {
 
