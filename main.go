@@ -796,6 +796,5 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	subPackage.AddCommand(subPackageDelete)
 	subPackage.AddCommand(subPackageShow)
 
-	//rootCmd.GenBashCompletionFile("ddev_completion.sh")
 	rootCmd.Execute()
 }
