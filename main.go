@@ -21,6 +21,11 @@
 // LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 // ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 
+/*
+Note: suggestions for level 2 subcommands doesn't work in cobra:
+https://github.com/spf13/cobra/issues/981
+*/
+
 package main
 
 import (
@@ -51,6 +56,20 @@ func main() {
 		Long: name + ` is a CLI application to control Unectio FaaS project connecting to the API endpoint.
 
 For online documentation, refer to https://docs.unectio.com`,
+	}
+
+	/* Completion commands and subcomands are defined here */
+
+	var subCompletionBash = &cobra.Command{
+		Use:   "completion [completion file name]",
+		Short: "Generates autocompletion file for bash",
+		Long: "Generates autocompletion file for bash\n" +
+			"Rename it to " + name + "\n Place to /usr/local/etc/bash_completion.d \nRestart your bash",
+		Args:   cobra.MinimumNArgs(1),
+		Hidden: true,
+		Run: func(cmd *cobra.Command, args []string) {
+			rootCmd.GenBashCompletionFile(args[0])
+		},
 	}
 
 	/* Function command and subcomands are defined here */
@@ -709,6 +728,7 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 
 	/* CLI commands initialisation */
 
+	rootCmd.AddCommand(subCompletionBash)
 	rootCmd.AddCommand(subFunction)
 	rootCmd.AddCommand(subRouter)
 	rootCmd.AddCommand(subRepo)
@@ -759,8 +779,7 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	subRepo.AddCommand(subRepoPull)
 
 	subRepo.AddCommand(subRepoFile)
-	subRepoFile.AddCommand(subRepoFileList)
-	subRepoFile.AddCommand(subRepoFileShow)
+	subRepoFile.AddCommand(subRepoFileList, subRepoFileShow)
 
 	subSecret.AddCommand(subSecretAdd)
 	subSecret.AddCommand(subSecretList)
@@ -777,5 +796,6 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	subPackage.AddCommand(subPackageDelete)
 	subPackage.AddCommand(subPackageShow)
 
+	//rootCmd.GenBashCompletionFile("ddev_completion.sh")
 	rootCmd.Execute()
 }
