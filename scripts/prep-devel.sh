@@ -1,6 +1,12 @@
 #!/bin/bash
 VGOPATH=$(echo $GOPATH | sed -e 's/:.*$//')
 
+if [ "x${1}" != "x" ]; then
+	echo "Set GOPATH to ${1}"
+	VGOPATH = ${1}
+    GOPATH=$VGOPATH
+fi
+
 if [ "x${VGOPATH}" == "x" ]; then
 	echo "Set GOPATH to somewhere" >&2
 	exit 0
