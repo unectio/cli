@@ -3,8 +3,8 @@ VGOPATH=$(echo $GOPATH | sed -e 's/:.*$//')
 
 if [ "x${1}" != "x" ]; then
 	echo "Set GOPATH to ${1}"
-	VGOPATH = ${1}
-    GOPATH=$VGOPATH
+	VGOPATH=${1}
+    GOPATH=${1}
 fi
 
 if [ "x${VGOPATH}" == "x" ]; then
