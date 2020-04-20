@@ -9,6 +9,6 @@ uctl-full: .FORCE
 	GOPATH=$(GOPATH):$(shell pwd) go build -tags batcher -o uctl
 
 deps:
-	./scripts/prep-devel.sh
+	GOPATH=$(GOPATH):$(shell pwd) ./scripts/prep-devel.sh
 
 .PHONY: .FORCE
