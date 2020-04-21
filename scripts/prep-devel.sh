@@ -17,8 +17,10 @@ set -e
 
 go get github.com/spf13/cobra
 echo $?
+ls -l ${GOPATH}"/src/github.com/spf13/cobra"
 go get github.com/dgrijalva/jwt-go
 echo $?
+ls -l ${GOPATH}"/src/github.com/dgrijalva/jwt-go"
 go get gopkg.in/yaml.v2
 echo $?
 go get go.uber.org/zap
