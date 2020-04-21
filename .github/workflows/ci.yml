@@ -71,3 +71,6 @@ jobs:
 
     - name: Build
       run: make
+
+    - name: Show help
+      run: ./uctl -h
