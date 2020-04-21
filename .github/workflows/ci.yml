@@ -55,8 +55,6 @@ jobs:
     needs: build2
     name: Build on MacOS 10.15
     runs-on: macos-10.15
-    defaults:
-      shell: bash
     steps:
 
     - name: Set up Go 1.13
