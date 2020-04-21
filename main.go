@@ -670,53 +670,63 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		Args:    cobra.NoArgs,
 	}
 
+	var pkgl, pkgv string
 	var subPackageAdd = &cobra.Command{
 		Use:     "add [package name] [package language] [package version]",
 		Aliases: []string{"create"},
 		Short:   "Add new package to the project",
-		Args:    cobra.MinimumNArgs(3),
+		Args:    cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			pkgn := args[0]
-			pkgl := args[1]
-			pkgv := args[2]
 			packageAdd(&pkgn, &pkgl, &pkgv)
 		},
 	}
+	subPackageAdd.Flags().StringVarP(&pkgl, "language", "l", "",
+		"package language")
+	subPackageAdd.MarkFlagRequired("language")
+	subPackageAdd.Flags().StringVarP(&pkgv, "version", "v", "",
+		"package version")
 
 	var subPackageList = &cobra.Command{
-		Use:     "list [package language]",
+		Use:     "list",
 		Short:   "List packages with language",
 		Aliases: []string{"ls"},
-		Args:    cobra.MinimumNArgs(1),
+		Args:    cobra.NoArgs,
 		Run: func(cmd *cobra.Command, args []string) {
-			pkgl := args[0]
 			packageList(&pkgl)
 		},
 	}
+	subPackageList.Flags().StringVarP(&pkgl, "language", "l", "",
+		"package language")
+	subPackageList.MarkFlagRequired("language")
 
 	var subPackageShow = &cobra.Command{
-		Use:     "show [package name] [package language]",
+		Use:     "show [package name]",
 		Short:   "Show package properties",
 		Aliases: []string{"info"},
-		Args:    cobra.MinimumNArgs(2),
+		Args:    cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			pkgn := args[0]
-			pkgl := args[1]
 			packageInfo(&pkgn, &pkgl)
 		},
 	}
+	subPackageShow.Flags().StringVarP(&pkgl, "language", "l", "",
+		"package language")
+	subPackageShow.MarkFlagRequired("language")
 
 	var subPackageDelete = &cobra.Command{
-		Use:     "delete [package name] [package language]",
+		Use:     "delete [package name]",
 		Short:   "Delete package",
 		Aliases: []string{"del", "rm", "remove"},
 		Args:    cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			pkgn := args[0]
-			pkgl := args[1]
 			packageDel(&pkgn, &pkgl)
 		},
 	}
+	subPackageDelete.Flags().StringVarP(&pkgl, "language", "l", "",
+		"package language")
+	subPackageDelete.MarkFlagRequired("language")
 
 	/* Global flags definition */
 

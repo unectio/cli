@@ -57,7 +57,7 @@ am:
 - set: <am-name> (not supported)
 - show: <am-name>
 package:
-- add: <pkg-name> <lang> <version>
-- list: <lang>
-- delete: <pkg-name> <lang>
-- show: <pkg-name> <lamg>
+- add: <pkg-name>
+- list:
+- delete: <pkg-name>
+- show: <pkg-name>
