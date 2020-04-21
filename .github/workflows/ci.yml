@@ -1,4 +1,4 @@
-name: CI
+name: uctl CICD
 
 on:
   push:
@@ -52,7 +52,7 @@ jobs:
       run: make
 
   build3:
-    needs: build2
+    needs: build1
     name: Build on MacOS 10.15
     runs-on: macos-10.15
     steps:
