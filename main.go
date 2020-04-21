@@ -156,7 +156,7 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 
 	var function_log_duration string
 	var subFunctionLogsShow = &cobra.Command{
-		Use:   "Show [function name]",
+		Use:   "show [function name]",
 		Short: "Show function logs",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
