@@ -30,6 +30,9 @@ jobs:
     - name: Build
       run: make
 
+    - name: Show help
+      run: ./uctl -h
+
   build2:
     needs: build1
     name: Build on Ubuntu 18.04
@@ -50,6 +53,9 @@ jobs:
 
     - name: Build
       run: make
+
+    - name: Show help
+      run: ./uctl -h
 
   build3:
     needs: build1
