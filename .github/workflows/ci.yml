@@ -6,9 +6,10 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  GOPATH: ${{ github.workspace }}
+
 jobs:
-  env:
-    GOPATH: ${{ github.workspace }}
   build:
     name: Build
     runs-on: ubuntu-16.04
