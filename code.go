@@ -72,30 +72,19 @@ func (ce elementCode) long() []*field {
 	}
 }
 
-func codeAdd(fcname *string, vfn *string, vlang *string, vsrc *string, vw *int) {
-	var fn, cname, lang, src string
+func codeAdd(fn *string, cname *string, vlang *string, vsrc *string, vw *int) {
+	var lang, src string
 	var w int
 
-	if strings.Contains(*fcname, "/") {
-		x := strings.SplitN(*fcname, "/", 2)
-		if len(x) != 2 {
-			fatal("Specify function/code separated by \"/\" ")
-		}
-		fn = x[0]
-		cname = x[1]
-	} else {
-		cname = *fcname
-		fn = *vfn
-	}
 	lang = *vlang
 	src = *vsrc
 	w = *vw
 
-	fid := resolve(fcol, fn)
+	fid := resolve(fcol, *fn)
 
 	var ci api.CodeImage
 
-	ci.Name = generate(cname, "code")
+	ci.Name = generate(*cname, "code")
 	ci.Lang = lang
 	ci.Weight = w
 	ci.Source = &api.SourceImage{}
