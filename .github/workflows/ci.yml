@@ -25,10 +25,13 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Get dependencies
-      run: make deps
+      run: make dep
+      shell: bashs
 
     - name: Build
       run: make
+      shell: bash
 
     - name: Show help
       run: ./uctl -h
+
