@@ -24,7 +24,7 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: Get dependencies
+    - name: Get dependencies1
       run: git config core.protectNTFS false
       shell: bash
 
