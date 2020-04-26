@@ -12,7 +12,7 @@ env:
 jobs:
   build1:
     name: Build on Windows 2019
-    runs-on: windows-latest4
+    runs-on: windows-latest
     steps:
 
     - name: Set up Go 1.13
