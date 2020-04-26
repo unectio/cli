@@ -25,11 +25,11 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Get dependencies1
-      run: git config core.protectNTFS false
+      run: make deps
       shell: bash
 
     - name: Build
-      run: git clone -- https://github.com/unectio/util 
+      run: make 
       shell: bash
 
     - name: Show help
