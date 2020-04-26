@@ -26,11 +26,9 @@ jobs:
 
     - name: Get dependencie1s
       run: make deps
-      shell: bash
 
     - name: Build
       run: make 
-      shell: bash
 
     - name: Show help
       run: ./uctl -h
