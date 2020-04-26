@@ -33,6 +33,12 @@ jobs:
     - name: Show help
       run: ./uctl -h
 
+    - name: Archieve uctl binary as artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: uctl-linux
+        path: ./uctl
+
   build2:
     needs: build1
     name: Build on Windows 2019
@@ -58,6 +64,12 @@ jobs:
       run: ./uctl -h
       shell: bash
 
+    - name: Archieve uctl binary as artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: uctl-windows
+        path: ./uctl
+
   build3:
     needs: build1
     name: Build on MacOS 10.15
@@ -81,3 +93,9 @@ jobs:
 
     - name: Show help
       run: ./uctl -h
+
+    - name: Archieve uctl binary as artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: uctl-mac
+        path: ./uctl
