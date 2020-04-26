@@ -26,7 +26,7 @@ jobs:
 
     - name: Get dependencies
       run: make dep
-      shell: bashs
+      shell: bash
 
     - name: Build
       run: make
