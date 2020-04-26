@@ -9,6 +9,9 @@ fi
 set -x
 set -e
 
+git --version
+git config --global core.protectNTFS false
+
 go get github.com/spf13/cobra
 go get github.com/dgrijalva/jwt-go
 go get gopkg.in/yaml.v2
