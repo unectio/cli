@@ -35,9 +35,10 @@ import (
 )
 
 const (
-	name          string = "uctl"
-	defaultConfig string = "/etc/" + name + ".config"
-	defaultCfgEnv string = "UCTL_CONFIG"
+	name           string = "uctl"
+	defaultConfig  string = "/etc/" + name + ".config"
+	defaultCfgEnv  string = "UCTL_CONFIG"
+	defaultProject string = ""
 )
 
 func fatal(msg string, args ...interface{}) {
@@ -48,6 +49,7 @@ func fatal(msg string, args ...interface{}) {
 var Verbose bool
 var DryRun bool
 var Cfg string = ""
+var Project string = ""
 
 func main() {
 
@@ -728,6 +730,36 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		"package language")
 	subPackageDelete.MarkFlagRequired("language")
 
+	/* Project command and subcomands are defined here */
+
+	var subProject = &cobra.Command{
+		Use:     "project",
+		Short:   "Manage projects",
+		Aliases: []string{"pr"},
+		Args:    cobra.NoArgs,
+	}
+
+	var subProjectList = &cobra.Command{
+		Use:     "list",
+		Short:   "List projects",
+		Aliases: []string{"ls"},
+		Args:    cobra.NoArgs,
+		Run: func(cmd *cobra.Command, args []string) {
+			projectList()
+		},
+	}
+
+	var subProjectShow = &cobra.Command{
+		Use:     "show [project id]",
+		Short:   "Show project properties",
+		Aliases: []string{"info"},
+		Args:    cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			prn := args[0]
+			projectInfo(&prn)
+		},
+	}
+
 	/* Global flags definition */
 
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "", false,
@@ -736,6 +768,8 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		"perform all client-side validation but do not perform any server requests")
 	rootCmd.PersistentFlags().StringVarP(&Cfg, "config", "", defaultConfig,
 		"path to the configuration file")
+	rootCmd.PersistentFlags().StringVarP(&Project, "project", "", defaultProject,
+		"project id")
 
 	/* CLI commands initialisation */
 
@@ -746,6 +780,7 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	rootCmd.AddCommand(subSecret)
 	rootCmd.AddCommand(subAM)
 	rootCmd.AddCommand(subPackage)
+	rootCmd.AddCommand(subProject)
 
 	subFunction.AddCommand(subFunctionAdd)
 	subFunction.AddCommand(subFunctionList)
@@ -806,6 +841,8 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	subPackage.AddCommand(subPackageList)
 	subPackage.AddCommand(subPackageDelete)
 	subPackage.AddCommand(subPackageShow)
+
+	subProject.AddCommand(subProjectList, subProjectShow)
 
 	rootCmd.Execute()
 }

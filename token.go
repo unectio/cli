@@ -38,9 +38,15 @@ import (
 )
 
 type Config struct {
-	Apilet string `yaml:"apilet"`
-	KeyId  string `yaml:"keyid"`
-	Key    string `yaml:"key"`
+	Apilet    string `yaml:"apilet"`
+	KeyId     string `yaml:"keyid"`
+	Key       string `yaml:"key"`
+	ProjectId string `yaml:"projectid"`
+}
+
+type Claims struct {
+	ProjectId string `json:"projectid"`
+	jwt.StandardClaims
 }
 
 type Login struct {
@@ -72,6 +78,10 @@ func getLogin() (*Login, error) {
 		return nil, err
 	}
 
+	if Project != "" {
+		conf.ProjectId = Project
+	}
+
 	return getSelfSignedLogin(&conf)
 }
 
@@ -81,9 +91,18 @@ func getSelfSignedLogin(conf *Config) (*Login, error) {
 		return nil, err
 	}
 
-	claims := &jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(uauth.SelfKeyLifetime).Unix(),
+	//	claims := &jwt.StandardClaims{
+	//		ExpiresAt: time.Now().Add(uauth.SelfKeyLifetime).Unix(),
+	//	}
+
+	claims := &Claims{
+		ProjectId: conf.ProjectId,
+		StandardClaims: jwt.StandardClaims{
+			// In JWT, the expiry time is expressed as unix milliseconds
+			ExpiresAt: time.Now().Add(uauth.SelfKeyLifetime).Unix(),
+		},
 	}
+
 	tok := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tok.Header["kid"] = conf.KeyId
 
