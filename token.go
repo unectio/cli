@@ -32,16 +32,18 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/unectio/api/uauth"
 	"github.com/unectio/util"
+	"io/ioutil"
 	"log"
 	"os"
 	"time"
 )
 
 type Config struct {
-	Apilet    string `yaml:"apilet"`
-	KeyId     string `yaml:"keyid"`
-	Key       string `yaml:"key"`
-	ProjectId string `yaml:"projectid"`
+	Apilet            string `yaml:"apilet"`
+	KeyId             string `yaml:"keyid"`
+	Key               string `yaml:"key"`
+	ProjectId         string `yaml:"projectid"`
+	ServerCertificate string `yaml:"certificate"`
 }
 
 type Claims struct {
@@ -50,8 +52,9 @@ type Claims struct {
 }
 
 type Login struct {
-	address string
-	token   string
+	address     string
+	token       string
+	certificate string
 }
 
 func config() string {
@@ -82,6 +85,10 @@ func getLogin() (*Login, error) {
 		conf.ProjectId = Project
 	}
 
+	if CertFile != "" {
+		conf.ServerCertificate = CertFile
+	}
+
 	return getSelfSignedLogin(&conf)
 }
 
@@ -91,9 +98,14 @@ func getSelfSignedLogin(conf *Config) (*Login, error) {
 		return nil, err
 	}
 
-	//	claims := &jwt.StandardClaims{
-	//		ExpiresAt: time.Now().Add(uauth.SelfKeyLifetime).Unix(),
-	//	}
+	caCert := ""
+	if conf.ServerCertificate != "" {
+		caCertB, err := ioutil.ReadFile(conf.ServerCertificate)
+		if err != nil {
+			return nil, err
+		}
+		caCert = string(caCertB)
+	}
 
 	claims := &Claims{
 		ProjectId: conf.ProjectId,
@@ -116,5 +128,5 @@ func getSelfSignedLogin(conf *Config) (*Login, error) {
 		return nil, err
 	}
 
-	return &Login{address: conf.Apilet, token: toks}, nil
+	return &Login{address: conf.Apilet, token: toks, certificate: caCert}, nil
 }

@@ -35,10 +35,11 @@ import (
 )
 
 const (
-	name           string = "uctl"
-	defaultConfig  string = "/etc/" + name + ".config"
-	defaultCfgEnv  string = "UCTL_CONFIG"
-	defaultProject string = ""
+	name            string = "uctl"
+	defaultConfig   string = "/etc/" + name + ".config"
+	defaultCfgEnv   string = "UCTL_CONFIG"
+	defaultProject  string = ""
+	defaultCertFile string = ""
 )
 
 func fatal(msg string, args ...interface{}) {
@@ -50,6 +51,7 @@ var Verbose bool
 var DryRun bool
 var Cfg string = ""
 var Project string = ""
+var CertFile string = ""
 
 func main() {
 
@@ -770,6 +772,19 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		"path to the configuration file")
 	rootCmd.PersistentFlags().StringVarP(&Project, "project", "", defaultProject,
 		"project id")
+
+	/* To not forget howto generate certificate
+	   	openssl req \
+	       -x509 \
+	       -nodes \
+	       -newkey rsa:2048 \
+	       -keyout server.key \
+	       -out server.crt \
+	       -days 3650 \
+	       -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=*"
+	*/
+	rootCmd.PersistentFlags().StringVarP(&CertFile, "certificate", "", defaultCertFile,
+		"path to server certificate file for https connection (by default  http will be used)")
 
 	/* CLI commands initialisation */
 

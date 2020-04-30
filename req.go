@@ -50,6 +50,7 @@ func makeReq(rq *rq.Request, res interface{}) {
 
 func (l *Login) MakeRequest(rq *rq.Request, res interface{}) error {
 	rq.Host = l.address
+	rq.Certificate = l.certificate
 	rq.Path = "/v1/" + rq.Path
 
 	rq = rq.H(api.AuthTokHeader, util.BearerPrefix+l.token)
