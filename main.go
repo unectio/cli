@@ -784,7 +784,9 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	       -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=*"
 	*/
 	rootCmd.PersistentFlags().StringVarP(&CertFile, "certificate", "", defaultCertFile,
-		"path to server certificate file for https connection (by default  http will be used)")
+		"path to server certificate file for https connection.\n"+
+			"By default systems certificates pool will be used.\n"+
+			"On windows you need to use this option always")
 
 	/* CLI commands initialisation */
 
