@@ -16,6 +16,6 @@ go get go.uber.org/zap
 go get github.com/gorilla/mux
 go get gopkg.in/mgo.v2
 
-go get github.com/unectio/util
-go get github.com/unectio/db
-go get github.com/unectio/api
+go get -u github.com/unectio/util
+go get -u github.com/unectio/db
+go get -u github.com/unectio/api
