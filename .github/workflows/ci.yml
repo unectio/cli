@@ -39,37 +39,6 @@ jobs:
         name: uctl-linux
         path: ./uctl
 
-  build2:
-    needs: build1
-    name: Build on Windows 2019
-    runs-on: windows-2019
-    steps:
-
-    - name: Set up Go 1.13
-      uses: actions/setup-go@v1
-      with:
-        go-version: 1.13
-        id: go
-
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-
-    - name: Get dependencies
-      run: make deps
-
-    - name: Build
-      run: make
-
-    - name: Show help
-      run: ./uctl -h
-      shell: bash
-
-    - name: Archieve uctl binary as artifact
-      uses: actions/upload-artifact@v1
-      with:
-        name: uctl-windows
-        path: ./uctl
-
   build3:
     needs: build1
     name: Build on MacOS 10.15
