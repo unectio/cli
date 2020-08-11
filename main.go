@@ -211,8 +211,11 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fn := args[0]
 			cn := args[1]
-			if code_weight < 1 {
+			if code_weight == 0 {
 				fatal("Code weight must be more than 0")
+			}
+			if code_weight == -1 {
+				code_weight = 0
 			}
 			codeAdd(&fn, &cn, &code_lang, &code_src, &code_weight)
 		},
@@ -223,7 +226,7 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	subFunctionCodeAdd.Flags().StringVarP(&code_src, "source", "s", "",
 		"sources (file name or url or repo:<repo name>:path)")
 	subFunctionCodeAdd.MarkFlagRequired("source")
-	subFunctionCodeAdd.Flags().IntVarP(&code_weight, "weight", "w", 1,
+	subFunctionCodeAdd.Flags().IntVarP(&code_weight, "weight", "w", -1,
 		"code weight, must be more than 0")
 
 	var subFunctionCodeList = &cobra.Command{
