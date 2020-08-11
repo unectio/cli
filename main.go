@@ -771,7 +771,7 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		"verbose output (print raw REST API data)")
 	rootCmd.PersistentFlags().BoolVarP(&DryRun, "dry", "", false,
 		"perform all client-side validation but do not perform any server requests")
-	rootCmd.PersistentFlags().StringVarP(&Cfg, "config", "", defaultConfig,
+	rootCmd.PersistentFlags().StringVarP(&Cfg, "config", "", "",
 		"path to the configuration file")
 	rootCmd.PersistentFlags().StringVarP(&Project, "project", "", defaultProject,
 		"project id")
