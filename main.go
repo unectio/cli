@@ -202,7 +202,7 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	}
 
 	var code_lang, code_src string
-	var code_weight int
+	var code_weight_add, code_weight_set int
 	var subFunctionCodeAdd = &cobra.Command{
 		Use:     "add [function name] [code name]",
 		Aliases: []string{"create"},
@@ -211,13 +211,10 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fn := args[0]
 			cn := args[1]
-			if code_weight == 0 {
-				fatal("Code weight must be more than 0")
+			if code_weight_add <= 0 {
+				fatal("Error: code weight must be greater than 0")
 			}
-			if code_weight == -1 {
-				code_weight = 0
-			}
-			codeAdd(&fn, &cn, &code_lang, &code_src, &code_weight)
+			codeAdd(&fn, &cn, &code_lang, &code_src, &code_weight_add)
 		},
 	}
 	subFunctionCodeAdd.Flags().StringVarP(&code_lang,
@@ -226,8 +223,8 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 	subFunctionCodeAdd.Flags().StringVarP(&code_src, "source", "s", "",
 		"sources (file name or url or repo:<repo name>:path)")
 	subFunctionCodeAdd.MarkFlagRequired("source")
-	subFunctionCodeAdd.Flags().IntVarP(&code_weight, "weight", "w", -1,
-		"code weight, must be more than 0")
+	subFunctionCodeAdd.Flags().IntVarP(&code_weight_add, "weight", "w", 1,
+		"weight of the code within the function")
 
 	var subFunctionCodeList = &cobra.Command{
 		Use:     "list [function name]",
@@ -260,20 +257,18 @@ uctl function add my-function -e ENVIRONMENT=test,RUNLIMIT=35`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fn := args[0]
 			cn := args[1]
-			if code_weight == 0 {
-				fatal("Code weight must be more than 0")
+			if code_weight_set < 0 {
+				fatal("Error: code weight must be 0 or greater")
 			}
-			if code_weight == -1 {
-				code_weight = 0
-			}
-			codeSet(&fn, &cn, &code_src, &code_weight)
+
+			codeSet(&fn, &cn, &code_src, &code_weight_set)
 		},
 	}
 	subFunctionCodeSet.Flags().StringVarP(&code_src, "source", "s", "",
 		"sources (file name or url or repo:<repo name>:path)")
 	subFunctionCodeSet.MarkFlagRequired("source")
-	subFunctionCodeSet.Flags().IntVarP(&code_weight, "weight", "w", -1,
-		"code weight, must be more than 0")
+	subFunctionCodeSet.Flags().IntVarP(&code_weight_set, "weight", "w", 0,
+		"weight of the code within the function, 0 to keep existing value")
 
 	var subFunctionCodeShow = &cobra.Command{
 		Use:     "show [function name] [code name]",
