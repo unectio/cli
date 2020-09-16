@@ -77,7 +77,7 @@ func packageList(lang *string) {
 	makeReq(pcols.Sub(*lang).List(), &pks)
 
 	for _, pk := range pks {
-		showListElement(elementPk{pk})
+		showListPkgElement(elementPk{pk})
 	}
 }
 

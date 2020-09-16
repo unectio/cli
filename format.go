@@ -55,6 +55,14 @@ func showInfoElement(le element) {
 	}
 }
 
+func showListPkgElement(le element) {
+	fmt.Printf("%-24s: %-24s (", le.id(), le.name())
+	for _, f := range le.long() {
+		fmt.Printf(" %s", f.data)
+	}
+	fmt.Printf(")\n")
+}
+
 func showAddedElement(le element) {
 	fmt.Printf("Added, id=%s (%s)\n", le.id(), le.short())
 }
