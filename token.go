@@ -29,13 +29,14 @@ package main
 
 import (
 	"encoding/base64"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/unectio/api/uauth"
-	"github.com/unectio/util"
 	"io/ioutil"
 	"log"
 	"os"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/unectio/api/uauth"
+	"github.com/unectio/util"
 )
 
 type Config struct {

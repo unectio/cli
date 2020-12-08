@@ -29,9 +29,10 @@ package main
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
-	"strings"
 )
 
 var seccol = apilet.Secrets

@@ -30,10 +30,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+
 	"github.com/unectio/api"
 	"github.com/unectio/api/apilet"
 	rq "github.com/unectio/util/request"
-	"strings"
 )
 
 var fcol = apilet.Functions

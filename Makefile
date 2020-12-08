@@ -9,6 +9,6 @@ uctl-full: .FORCE
 	go build -tags batcher -o uctl
 
 deps:
-	./scripts/prep-devel.sh
+	go mod download
 
 .PHONY: .FORCE

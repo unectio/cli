@@ -29,10 +29,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/unectio/api"
-	"github.com/unectio/api/apilet"
 	"io/ioutil"
 	"strings"
+
+	"github.com/unectio/api"
+	"github.com/unectio/api/apilet"
 )
 
 var ccol = apilet.FnCodes

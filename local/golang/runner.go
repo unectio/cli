@@ -10,12 +10,13 @@
 package main
 
 import (
-	"os"
-	"fmt"
-	"flag"
-	"strings"
-	"io/ioutil"
 	"encoding/json"
+	"flag"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"strings"
+
 	"github.com/unectio/api"
 )
 
@@ -59,7 +60,7 @@ func main() {
 		rq.Args[x[0]] = x[1]
 	}
 
-	if *claims != ""  {
+	if *claims != "" {
 		rq.Claims = make(map[string]interface{})
 		for _, cl := range strings.Split(*claims, ":") {
 			x := strings.SplitN(cl, "=", 2)
@@ -75,7 +76,7 @@ func main() {
 
 	res, err := json.Marshal(result)
 	if err == nil {
-		fmt.Printf("Returned: [%s]\n", res);
+		fmt.Printf("Returned: [%s]\n", res)
 	}
 
 }

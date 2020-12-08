@@ -31,10 +31,11 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/unectio/api"
-	"github.com/unectio/api/apilet"
 	"os"
 	"strings"
+
+	"github.com/unectio/api"
+	"github.com/unectio/api/apilet"
 )
 
 var rtcol = apilet.Routers

@@ -30,9 +30,10 @@
 package main
 
 import (
-	"os"
 	"flag"
-	"this/batcher"
+	"os"
+
+	"github.com/unectio/cli/batcher"
 )
 
 func loadSpec() {

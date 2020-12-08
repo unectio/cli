@@ -29,11 +29,12 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/unectio/api"
-	"github.com/unectio/util"
-	"github.com/unectio/util/request"
 	"log"
 	"reflect"
+
+	"github.com/unectio/api"
+	"github.com/unectio/util"
+	rq "github.com/unectio/util/request"
 )
 
 func makeReq(rq *rq.Request, res interface{}) {
